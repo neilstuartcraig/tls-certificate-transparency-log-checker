@@ -1,6 +1,6 @@
 # tls-certificate-transparency-log-alerter
 
-[![Travis CI build status](https://travis-ci.org/gh-username/tls-certificate-transparency-log-alerter.svg)](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-alerter)
+[![Travis CI build status](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-alerter.svg)](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-alerter)
 
 ## HEALTH WARNING!
 **This is still in early stage development and subject to change, prone to bugs and only partially complete.**
@@ -17,6 +17,7 @@ This app offers both simple, unix-style command line functionality and a consuma
 
 
 ## Installation
+
 ```
 npm install tls-certificate-transparency-log-alerter --production
 ```
@@ -48,6 +49,7 @@ To show available arguments.
 
 ## Development
 I've set this project up such that it builds via [babel](https://babeljs.io/). I write code in [atom](https://atom.io/) and use the [language-babel](https://atom.io/packages/language-babel) plugin to automatically build on save - this is configured in the `.language-babel` config file in the project root. Source code is in `<project root>/src/` and transpiled files are in `<project root>/dist/`. Also noteworthy is the use of the babel plugin [babel-plugin-typecheck](https://github.com/codemix/babel-plugin-typecheck) which adds [flow](https://flowtype.org/) style function argument types but additionally over flow, enforces these at runtime (which I like very much, YMMV).
+
 
 ## Semver
 This project aims to maintain the [semver](http://semver.org/) version numbering scheme.
