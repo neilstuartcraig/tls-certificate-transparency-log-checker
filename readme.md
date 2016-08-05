@@ -1,6 +1,6 @@
 # tls-certificate-transparency-log-alerter
 
-[![Travis CI build status](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-alerter.svg)](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-alerter)
+[![Travis CI build status](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-alerter.svg)](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-alerter) (that's just because the tests are done yet)
 
 ## HEALTH WARNING!
 **This is still in early stage development and subject to change, prone to bugs and only partially complete.**
