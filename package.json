@@ -1,0 +1,58 @@
+{
+  "name": "tls-certificate-transparency-log-alerter",
+  "version": "1.0.0",
+  "description": "A super simple program to check TLS certificate transparency logs for one or more domain name patterns and alert on new or unexpected certificates",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node .",
+    "post-install": "./scripts/post-install.js",
+    "vuln-scan": "./node_modules/.bin/snyk test",
+    "lint": "node_modules/.bin/eslint ./*.js lib/*.js test/*.js",
+    "test": "snyk test && node_modules/.bin/nyc node_modules/.bin/ava test/*.js",
+    "report": "./node_modules/.bin/nyc report --reporter=lcov --reporter=html && open coverage/index.html",
+    "build": "./node_modules/babel-cli/bin/babel.js src/ --out-dir dist",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "bin": {
+    "check-ct-logs": "./dist/cli/check-ct-logs.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neilstuartcraig/tls-certificate-transparency-log-alerter"
+  },
+  "keywords": [
+    "TLS",
+    "tls",
+    "cert",
+    "certificate",
+    "transparency",
+    "transparency logs",
+    "x509",
+    "logs"
+  ],
+  "author": "Neil Craig neil.craig@thedotproduct.org",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/neilstuartcraig/tls-certificate-transparency-log-alerter/issues"
+  },
+  "homepage": "https://github.com/neilstuartcraig/tls-certificate-transparency-log-alerter#readme",
+  "dependencies": {
+    "http2": "^3.3.4",
+    "xml2json": "^0.9.1",
+    "yargs": "^4.8.1",
+    "snyk": "^1.18.0"
+  },
+  "devDependencies": {
+    "ava": "^0.15.2",
+    "babel-cli": "^6.11.4",
+    "babel-eslint": "^6.1.2",
+    "babel-plugin-syntax-flow": "^6.8.0",
+    "babel-plugin-transform-flow-strip-types": "^6.8.0",
+    "babel-plugin-typecheck": "^3.9.0",
+    "babel-preset-es2015-node6": "^0.2.0",
+    "eslint-config-tdp": "^1.1.1",
+    "nyc": "^7.1.0"
+  },
+  "snyk": true
+}

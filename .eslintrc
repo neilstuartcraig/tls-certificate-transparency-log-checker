@@ -1,0 +1,12 @@
+{
+    "extends":
+    [
+        "tdp/node",
+        "tdp/ava",
+        "tdp/flow-types"
+    ],
+    "plugins":
+    [
+        "babel"
+    ]
+}

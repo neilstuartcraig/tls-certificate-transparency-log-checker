@@ -1,0 +1,6 @@
+version: v1.5.2
+ignore: {}
+patch:
+  'npm:minimatch:20160620':
+    - openssl-cert-tools > mocha > glob > minimatch:
+        patched: '2016-08-05T20:19:11.890Z'

@@ -1,0 +1,8 @@
+{
+    "transpileOnSave": true,
+    "createTranspiledCode": true,
+    "disableWhenNoBabelrcFileInPath": true,
+    "suppressTranspileOnSaveMessages": true,
+    "projectRoot": true,
+    "createTargetDirectories": true
+}
