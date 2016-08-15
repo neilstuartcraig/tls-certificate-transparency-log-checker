@@ -4,7 +4,7 @@
 import test from "ava";
 
 // Local deps
-import lib from "../dist/lib/tls-certificate-transparency-log-alerter-lib.js";
+import lib from "../dist/lib/tls-certificate-transparency-log-checker-lib.js";
 
 test("lib.test() with valid inputs (1)", (t) =>
 {

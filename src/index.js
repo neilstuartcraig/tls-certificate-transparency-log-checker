@@ -20,5 +20,5 @@ lib.checkCTLogs(get, toJson, config.domainNamePatterns, config.checkIntervalSecs
         throw checkCTLogsErr;
     }
 
-    console.log("RES1: " + JSON.stringify(checkCTLogsRes, null, 2));
+    console.log(JSON.stringify(checkCTLogsRes, null, 2));
 });

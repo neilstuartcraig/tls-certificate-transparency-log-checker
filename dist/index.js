@@ -20,6 +20,6 @@ lib.checkCTLogs(_http.get, _xml2json.toJson, config.domainNamePatterns, config.c
         throw checkCTLogsErr;
     }
 
-    console.log("RES1: " + JSON.stringify(checkCTLogsRes, null, 2));
+    console.log(JSON.stringify(checkCTLogsRes, null, 2));
 });
-//# sourceMappingURL=/Users/craign04/Documents/BBC/GlobalTrafficMGMT/github/tls-certificate-transparency-log-alerter/index.js.map
+//# sourceMappingURL=/Users/craign04/Documents/BBC/GlobalTrafficMGMT/github/tls-certificate-transparency-log-checker/index.js.map
