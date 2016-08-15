@@ -1,6 +1,6 @@
 # tls-certificate-transparency-log-alerter
 
-[![Travis CI build status](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-alerter.svg)](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-alerter) (that's just because the tests are done yet)
+[![Travis CI build status](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-alerter.svg)](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-alerter) (that's just because the tests are not done yet)
 
 ## HEALTH WARNING!
 **This is still in early stage development and subject to change, prone to bugs and only partially complete.**
@@ -12,7 +12,7 @@ This app offers both simple, unix-style command line functionality and a consuma
 
 The source of data for this package is [crt.sh](https://crt.sh), a certificate transparency log aggregator. We make use of the RSS feeds crt.sh provides so please don't abuse them (e.g. by running tests very frequently).
 
-Oh yeah, this is HTTP2-capablein requests for crt.sh data.
+Oh yeah, this is HTTP2-capable in terms of the requests it makes for crt.sh data.
 
 
 ## Prerequisites
