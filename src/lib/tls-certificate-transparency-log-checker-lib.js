@@ -1,9 +1,10 @@
 "use strict";
 
 // Core deps
-// import OS from "os";
+import OS from "os";
 
 // 3rd party deps
+import {parseCert} from "x509.js";
 
 // Defaults (used in function definitions)
 const nowTS = new Date().getTime() / 1000; // NOTE: JS timestamps are in msec
@@ -111,9 +112,13 @@ function getCertsData(parsedJSON: Object, ignoreCertsValidFromBeforeTS: number =
 
                     // Cert
                     // TODO: determine which format the cert is in - doesn't seem to be b64
-                    // let certRaw = cert.summary["$t"].match(/.*(-----BEGIN CERTIFICATE-----.*-----END CERTIFICATE-----).*/);
-                    // let parsedCert = certRaw[1].replace(/<br>/g, OS.EOL);
+                    let certRaw = cert.summary["$t"].match(/.*(-----BEGIN CERTIFICATE-----.*-----END CERTIFICATE-----).*/);
+                    let parsedCert = certRaw[1].replace(/<br>/g, OS.EOL);
                     // let decodedCert = Buffer.from(parsedCert, "ascii").toString("utf8");
+
+let certJSON = parseCert(parsedCert);
+
+console.log("CERT: " + JSON.stringify(certJSON, null, 2));
 
                     let data =
                     {

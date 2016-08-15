@@ -77,4 +77,3 @@ try {
 
     console.log(JSON.stringify(output, null, 2));
 });
-//# sourceMappingURL=/Users/craign04/Documents/BBC/GlobalTrafficMGMT/github/tls-certificate-transparency-log-checker/cli/check-ct-logs.js.map

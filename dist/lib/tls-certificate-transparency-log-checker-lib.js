@@ -1,13 +1,20 @@
 "use strict";
 
 // Core deps
-// import OS from "os";
 
-// 3rd party deps
+var _os = require("os");
+
+var _os2 = _interopRequireDefault(_os);
+
+var _x = require("x509.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Defaults (used in function definitions)
-
 const nowTS = new Date().getTime() / 1000; // NOTE: JS timestamps are in msec
+
+
+// 3rd party deps
 const defaults = {
     ignoreCertsValidFromBeforeTS: nowTS - 86400, // 1 day ago
     ignoreCertsValidToBeforeTS: nowTS,
@@ -117,9 +124,13 @@ function getCertsData(parsedJSON, ignoreCertsValidFromBeforeTS = defaults.ignore
 
                     // Cert
                     // TODO: determine which format the cert is in - doesn't seem to be b64
-                    // let certRaw = cert.summary["$t"].match(/.*(-----BEGIN CERTIFICATE-----.*-----END CERTIFICATE-----).*/);
-                    // let parsedCert = certRaw[1].replace(/<br>/g, OS.EOL);
+                    let certRaw = cert.summary["$t"].match(/.*(-----BEGIN CERTIFICATE-----.*-----END CERTIFICATE-----).*/);
+                    let parsedCert = certRaw[1].replace(/<br>/g, _os2.default.EOL);
                     // let decodedCert = Buffer.from(parsedCert, "ascii").toString("utf8");
+
+                    let certJSON = (0, _x.parseCert)(parsedCert);
+
+                    console.log("CERT: " + JSON.stringify(certJSON, null, 2));
 
                     let data = {
                         commonName: commonName,
@@ -361,4 +372,3 @@ function _inspect(input, depth) {
         }
     }
 }
-//# sourceMappingURL=/Users/craign04/Documents/BBC/GlobalTrafficMGMT/github/tls-certificate-transparency-log-checker/lib/tls-certificate-transparency-log-checker-lib.js.map

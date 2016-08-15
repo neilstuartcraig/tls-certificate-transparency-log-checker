@@ -12,7 +12,7 @@
     "unit-test": "node_modules/.bin/nyc node_modules/.bin/ava test/*.js",
     "test": "snyk test && node_modules/.bin/nyc node_modules/.bin/ava test/*.js",
     "report": "./node_modules/.bin/nyc report --reporter=lcov --reporter=html && open coverage/index.html",
-    "build": "./node_modules/babel-cli/bin/babel.js src/ --out-dir dist",
+    "build": "./node_modules/babel-cli/bin/babel.js src/ --out-dir dist --source-maps",
     "snyk-protect": "snyk protect",
     "prepublish": "npm run snyk-protect"
   },
@@ -31,6 +31,7 @@
     "certificate",
     "transparency",
     "transparency logs",
+    "ct",
     "x509",
     "logs"
   ],
@@ -42,9 +43,10 @@
   "homepage": "https://github.com/neilstuartcraig/tls-certificate-transparency-log-alerter#readme",
   "dependencies": {
     "http2": "^3.3.4",
+    "snyk": "^1.18.0",
+    "x509.js": "^1.0.0",
     "xml2json": "^0.9.1",
-    "yargs": "^4.8.1",
-    "snyk": "^1.18.0"
+    "yargs": "^4.8.1"
   },
   "devDependencies": {
     "ava": "^0.15.2",
@@ -55,6 +57,7 @@
     "babel-plugin-typecheck": "^3.9.0",
     "babel-preset-es2015-node6": "^0.2.0",
     "eslint-config-tdp": "^1.1.1",
+    "nock": "^8.0.0",
     "nyc": "^7.1.0"
   },
   "snyk": true

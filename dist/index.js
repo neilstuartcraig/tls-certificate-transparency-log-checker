@@ -30,4 +30,3 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
     console.log(JSON.stringify(checkCTLogsRes, null, 2));
 }); // NOTE: Path is relative to build dir (dist/)
-//# sourceMappingURL=/Users/craign04/Documents/BBC/GlobalTrafficMGMT/github/tls-certificate-transparency-log-checker/index.js.map
