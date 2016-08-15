@@ -5,8 +5,8 @@ const path = require("path");
 const fs = require("fs");
 
 const configDir = "config";
-const configTemplateFilename = "tls certificate transparency log alerter-config-template.js";
-const configDestinationFilename = "tls certificate transparency log alerter-config.js";
+const configTemplateFilename = "tls-certificate-transparency-log-alerter-config-template.js";
+const configDestinationFilename = "tls-certificate-transparency-log-alerter-config.js";
 
 const src = path.join("./", configDir, "/", configTemplateFilename).replace(" ", "\ ");
 const dest = path.join("./", configDir, "/", configDestinationFilename);

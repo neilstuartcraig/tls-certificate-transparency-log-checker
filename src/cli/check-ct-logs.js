@@ -8,7 +8,7 @@ import {get} from "http2";
 import {toJson} from "xml2json";
 
 // TODO: convert to import syntax
-import {checkCTLogs} from "../lib/tls-certificate-transparency-log-alerter-lib.js";
+import {checkCTLogs} from "../lib/tls-certificate-transparency-log-checker-lib.js";
 
 const yargs = require("yargs")
     .usage("Usage: $0 [options]")
@@ -18,7 +18,7 @@ const yargs = require("yargs")
         demand: false,
         alias: ["c", "conf"],
         type: "string",
-        default: "../../config/tls-certificate-transparency-log-alerter-config.js",
+        default: "../../config/tls-certificate-transparency-log-checker-config.js",
         describe: "the (absolute) path to a specific configuration file which overrides defaults"
     })
     .option("no_certs",

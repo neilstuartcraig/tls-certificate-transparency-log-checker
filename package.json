@@ -1,7 +1,7 @@
 {
-  "name": "tls-certificate-transparency-log-alerter",
+  "name": "tls-certificate-transparency-log-checker",
   "version": "1.0.0",
-  "description": "A super simple program to check TLS certificate transparency logs for one or more domain name patterns and alert on new or unexpected certificates",
+  "description": "A super simple program to check TLS certificate transparency logs for one or more domain name patterns, ",
   "main": "dist/index.js",
   "scripts": {
     "start": "node .",
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/neilstuartcraig/tls-certificate-transparency-log-alerter"
+    "url": "https://github.com/neilstuartcraig/tls-certificate-transparency-log-checker"
   },
   "keywords": [
     "TLS",

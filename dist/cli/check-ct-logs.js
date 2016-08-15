@@ -10,14 +10,14 @@ var _http = require("http2");
 
 var _xml2json = require("xml2json");
 
-var _tlsCertificateTransparencyLogAlerterLib = require("../lib/tls-certificate-transparency-log-alerter-lib.js");
+var _tlsCertificateTransparencyLogCheckerLib = require("../lib/tls-certificate-transparency-log-checker-lib.js");
 
 const yargs = require("yargs").usage("Usage: $0 [options]").option("config", {
     // NOTE: Not sure why but you have to use --config <path>
     demand: false,
     alias: ["c", "conf"],
     type: "string",
-    default: "../../config/tls-certificate-transparency-log-alerter-config.js",
+    default: "../../config/tls-certificate-transparency-log-checker-config.js",
     describe: "the (absolute) path to a specific configuration file which overrides defaults"
 }).option("no_certs", {
     demand: false,
@@ -51,7 +51,7 @@ try {
     throw e;
 }
 
-(0, _tlsCertificateTransparencyLogAlerterLib.checkCTLogs)(_http.get, _xml2json.toJson, config.domainNamePatterns, config.checkIntervalSecs, config.ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) => {
+(0, _tlsCertificateTransparencyLogCheckerLib.checkCTLogs)(_http.get, _xml2json.toJson, config.domainNamePatterns, config.checkIntervalSecs, config.ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) => {
     if (checkCTLogsErr) {
         throw checkCTLogsErr;
     }
