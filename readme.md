@@ -31,7 +31,7 @@ Note: If you're looking to do development work on this, omit the `--production` 
 ## Using tls-certificate-transparency-log-checker
 
 ### Using tls-certificate-transparency-log-checker as a library
-You can simply `require` the library side of this package by listing it as a dependency in your `package.json` file and `require`ing or `import`ing as you would any other library.
+You can simply `require` or `import` the library side of this package by listing it as a dependency in your `package.json` file and `require`ing or `import`ing as you would any other library.
 
 ### Using tls-certificate-transparency-log-checker as a command line client (CLI)
 When you `npm install` this package, you'll be a "binary" (yeah, it's not a binary, it's an executable - but that's a convention we have for some weird reason) installed which will allow you to run:

@@ -8,5 +8,10 @@
     "plugins":
     [
         "babel"
-    ]
+    ],
+    "rules":
+    {
+        "complexity": [2, 12],
+        "babel/object-shorthand": ["error", "never"]
+    }
 }

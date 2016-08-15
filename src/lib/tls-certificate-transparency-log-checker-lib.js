@@ -14,7 +14,7 @@ const defaults =
     expectedCAs: [] // Default is expect none
 };
 
-function getCertsData(parsedJSON: Object, ignoreCertsValidFromBeforeTS: number = defaults.checkIntervalSecs, ignoreCertsValidToBeforeTS: number = defaults.ignoreCertsValidToBeforeTS, expectedCAs: Array = defaults.expectedCAs = defaults.expectedCAs, callback: Function)
+function getCertsData(parsedJSON: Object, ignoreCertsValidFromBeforeTS: number = defaults.ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS: number = defaults.ignoreCertsValidToBeforeTS, expectedCAs: Array = defaults.expectedCAs = defaults.expectedCAs, callback: Function)
 {
     /* NOTE: JSON structure of parsedJSON is:
     {
@@ -41,7 +41,7 @@ function getCertsData(parsedJSON: Object, ignoreCertsValidFromBeforeTS: number =
     let err = new Error("Malformed JSON, rejecting");
     let certsData =
     {
-        certs:
+        allCerts:
         {
             count: 0,
             entries: []
@@ -74,7 +74,7 @@ function getCertsData(parsedJSON: Object, ignoreCertsValidFromBeforeTS: number =
                 let titleComponents = cert.title.split(";");
 
                 // CA should be the 0th element, see above example
-                let CAPrefix = "Issued by ";
+                let CAPrefix = "Issued by "; // Note. we need the trailing space
                 let CAPrefixPos = titleComponents[0].indexOf(CAPrefix);
                 let CA = CAPrefixPos >= 0 ? titleComponents[0].substr(CAPrefixPos + CAPrefix.length) : null;
 
@@ -132,36 +132,39 @@ function getCertsData(parsedJSON: Object, ignoreCertsValidFromBeforeTS: number =
                     err = null;
 
     // TODO: Prob split filtering into dedicated Fn
-                    // Only include certs which have been issued since the last run, unless the user has opted to return all by setting checkIntervalSecs to (exactly) 0
+                    // Only include certs which have been issued since the last run, unless the user has opted to return all by setting ignoreCertsValidFromBeforeTS to (exactly) 0
                     if(data.validFromTS >= ignoreCertsValidFromBeforeTS || ignoreCertsValidFromBeforeTS === 0)
                     {
-                        certsData.certs.entries.push(data);
-                    }
+                        // All certs
+                        certsData.allCerts.entries.push(data);
 
-                    let expectedCAMatch = false;
-                    if(data.CA)
-                    {
-                        expectedCAs.forEach((ECA) =>
+                        // Certs with an "unexpected" CA
+                        let expectedCAMatch = false;
+                        if(data.CA)
                         {
-                            if(data.CA.match(ECA))
+                            expectedCAs.forEach((ECA) =>
                             {
-                                expectedCAMatch = true;
-                            }
-                        });
+                                if(data.CA.match(ECA))
+                                {
+                                    expectedCAMatch = true;
+                                }
+                            });
+                        }
+
+                        if(expectedCAMatch === false)
+                        {
+                            certsData.unexpectedCA.entries.push(data);
+                        }
+
+
+                        // All certs, grouped by CA
+                        if(certsData.byCA.entries[data.CA] === undefined)
+                        {
+                            certsData.byCA.entries[data.CA] = [];
+                        }
+
+                        certsData.byCA.entries[data.CA].push(data);
                     }
-
-                    if(expectedCAMatch === false)
-                    {
-                        certsData.unexpectedCA.entries.push(data);
-                    }
-
-
-                    if(certsData.byCA.entries[data.CA] === undefined)
-                    {
-                        certsData.byCA.entries[data.CA] = [];
-                    }
-
-                    certsData.byCA.entries[data.CA].push(data);
                 }
 
             });
@@ -169,7 +172,7 @@ function getCertsData(parsedJSON: Object, ignoreCertsValidFromBeforeTS: number =
     }
 
     // Counts (totals)
-    certsData.certs.count = certsData.certs.entries.length;
+    certsData.allCerts.count = certsData.allCerts.entries.length;
     certsData.unexpectedCA.count = certsData.unexpectedCA.entries.length;
     certsData.byCA.count = Object.keys(certsData.byCA.entries).length;
 
@@ -220,15 +223,15 @@ function getRSSXML(domainNamePattern: string, get: Object, callback: Function)
 
 
 // Maybe this should be an option obj? for at least e.g. config-type options
-function checkCTLogs(get: Object, toJson: Function, domainNamePatterns: Array, checkIntervalSecs: uint32 = defaults.checkIntervalSecs, ignoreCertsValidToBeforeTS: number = defaults.ignoreCertsValidToBeforeTS, expectedCAs: Array = defaults.expectedCAs, callback: Function)
+function checkCTLogs(get: Object, toJson: Function, domainNamePatterns: Array, ignoreCertsValidFromBeforeTS: number = defaults.ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS: number = defaults.ignoreCertsValidToBeforeTS, expectedCAs: Array = defaults.expectedCAs, callback: Function)
 {
-    const numDomainNamePatterns = domainNamePatterns.length;
-    let numDomainNamePatternsCompleted = 0;
+    const totalNumDomainNamePatterns = domainNamePatterns.length;
+    let totalNumDomainNamePatternsCompleted = 0;
 
     domainNamePatterns.forEach((domainNamePattern) =>
     {
         // HTTP2-capable GET of the specific XML feed for the relevant domain name pattern (e.g. %.bbc.co.uk - where % is a wildcard)
-        getRSSXML(domainNamePattern, get, (RSSError, RSSXML) =>
+        getRSSXML(domainNamePattern, get, (RSSError, RSSXML) => // eslint-disable-line consistent-return
         {
             if(RSSError)
             {
@@ -236,35 +239,34 @@ function checkCTLogs(get: Object, toJson: Function, domainNamePatterns: Array, c
             }
 
             // Raw conversion from XML to JSON
-            convertXMLToJSON(toJson, RSSXML, (convertErr, RSSJSON) =>
+            convertXMLToJSON(toJson, RSSXML, (convertErr, RSSJSON) => // eslint-disable-line consistent-return
             {
                 if(convertErr)
                 {
                     return callback(convertErr, null);
                 }
 
-                let ignoreCertsValidFromBeforeTS = nowTS - checkIntervalSecs;
-
-                getCertsData(RSSJSON, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, expectedCAs, (getCertsDataErr, certsData) =>
+                // Downloading of RSS feed from crt.sh with filtering and parsing
+                getCertsData(RSSJSON, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, expectedCAs, (getCertsDataErr, certsData) => // eslint-disable-line consistent-return
                 {
                     if(getCertsDataErr)
                     {
                         return callback(getCertsDataErr, null);
                     }
 
-                    numDomainNamePatternsCompleted++;
+                    // Track how many of the configured domainNamePatterns we've completed and...
+                    totalNumDomainNamePatternsCompleted++;
 
-                    if(numDomainNamePatternsCompleted >= numDomainNamePatterns)
+                    // ...exit when all domainNamePatterns are complete (because this is async)
+                    if(totalNumDomainNamePatternsCompleted >= totalNumDomainNamePatterns)
                     {
                         return callback(null, certsData);
                     }
                 });
-            })
+            });
         });
     });
 }
 
-module.exports =
-{
-    checkCTLogs: checkCTLogs
-};
+// We *should* only need to export the user-facing function
+module.exports = checkCTLogs;

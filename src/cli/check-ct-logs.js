@@ -7,8 +7,8 @@
 import {get} from "http2";
 import {toJson} from "xml2json";
 
-// TODO: convert to import syntax
-import {checkCTLogs} from "../lib/tls-certificate-transparency-log-checker-lib.js";
+// Local deps
+import checkCTLogs from "../lib/tls-certificate-transparency-log-checker-lib.js";
 
 const yargs = require("yargs")
     .usage("Usage: $0 [options]")
@@ -21,13 +21,13 @@ const yargs = require("yargs")
         default: "../../config/tls-certificate-transparency-log-checker-config.js",
         describe: "the (absolute) path to a specific configuration file which overrides defaults"
     })
-    .option("no_certs",
+    .option("no_all_certs",
     {
         demand: false,
         // alias: ["no-new"], // DOESNT WORK
         type: "boolean",
         default: false,
-        describe: "if true, the 'certs' certificates (those whose valid from data is newer than now - config option 'checkIntervalSecs' ) element of the output JSON will be omitted "
+        describe: "if true, the 'allCerts' certificates (literally all certs found in the CT logs whose valid from data is newer than now - config option 'ignoreCertsValidFromBeforeTS' ) element of the output JSON will be omitted "
     })
     .option("no_unexpected",
     {
@@ -35,7 +35,7 @@ const yargs = require("yargs")
         // alias: ["no-unexpected"], // DOESNT WORK
         type: "boolean",
         default: false,
-        describe: "if true, the 'unexpectedCA' certificates (those whose CA does not match at least one of the config option 'expectedCAs' ) element of the output JSON will be omitted "
+        describe: "if true, the 'unexpectedCA' certificates (those certs whose CA does *not* match at least one of the config option 'expectedCAs' ) element of the output JSON will be omitted "
     })
     .option("no_by_ca",
     {
@@ -60,7 +60,7 @@ catch(e)
 }
 
 
-checkCTLogs(get, toJson, config.domainNamePatterns, config.checkIntervalSecs, config.ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
+checkCTLogs(get, toJson, config.domainNamePatterns, config.ignoreCertsValidFromBeforeTS, config.ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
 {
     if(checkCTLogsErr)
     {
@@ -69,9 +69,10 @@ checkCTLogs(get, toJson, config.domainNamePatterns, config.checkIntervalSecs, co
 
     let output = checkCTLogsRes;
 
-    if(args.no_certs)
+// Remove undesired output - yeah, this is a crappy method but will do for now
+    if(args.no_all_certs)
     {
-        delete output.certs;
+        delete output.allCerts;
     }
 
     if(args.no_unexpected)
@@ -83,9 +84,6 @@ checkCTLogs(get, toJson, config.domainNamePatterns, config.checkIntervalSecs, co
     {
         delete output.byCA;
     }
-
-// let k = Object.keys(output);
-// console.dir(k);
 
     console.log(JSON.stringify(output, null, 2));
 });

@@ -1,6 +1,6 @@
 "use strict";
 
-const nowTS = new Date().getTime() / 1000; // Into seconds
+const nowTS = parseInt(new Date().getTime() / 1000, 10); // Into seconds
 
 module.exports =
 {
@@ -16,13 +16,11 @@ module.exports =
         "%.bbc.com"
     ],
 
-    // Check interval - used to filter out previously alerted-on certs, entries with "valid from" < (now - checkIntervalSecs) will be omitted from results
-    // Set checkIntervalSecs to 0 to disable filtering
-    // Data type is uint32
-    checkIntervalSecs: 86400,
+    // Timestamp representing the date/time after which certificates whose valid from date is older (less than) will be ignored
+    ignoreCertsValidFromBeforeTS: nowTS - (86400 * 365), // Ignore certs issued more than 1 day ago
 
     // Timestamp representing the date/time after which certificates whose valid until date is older (less than) will be ignored
-    ignoreCertsValidToBeforeTS: nowTS, // Into seconds
+    ignoreCertsValidToBeforeTS: nowTS, // Ignore certs which are already expired
 
     // Array of regexes to match CAs in certs against. Any CAs which DO NOT match one or more regex will trigger an alert
     // Be as general or as specific as you want here...i.e. expect a CA wholesale or just e.g. EV

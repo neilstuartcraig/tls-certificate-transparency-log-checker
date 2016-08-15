@@ -14,7 +14,7 @@ const defaults = {
     expectedCAs: [] // Default is expect none
 };
 
-function getCertsData(parsedJSON, ignoreCertsValidFromBeforeTS = defaults.checkIntervalSecs, ignoreCertsValidToBeforeTS = defaults.ignoreCertsValidToBeforeTS, expectedCAs = defaults.expectedCAs = defaults.expectedCAs, callback) {
+function getCertsData(parsedJSON, ignoreCertsValidFromBeforeTS = defaults.ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS = defaults.ignoreCertsValidToBeforeTS, expectedCAs = defaults.expectedCAs = defaults.expectedCAs, callback) {
     if (!(parsedJSON instanceof Object)) {
         throw new TypeError("Value of argument \"parsedJSON\" violates contract.\n\nExpected:\nObject\n\nGot:\n" + _inspect(parsedJSON));
     }
@@ -59,7 +59,7 @@ function getCertsData(parsedJSON, ignoreCertsValidFromBeforeTS = defaults.checkI
 
     let err = new Error("Malformed JSON, rejecting");
     let certsData = {
-        certs: {
+        allCerts: {
             count: 0,
             entries: []
         },
@@ -83,7 +83,7 @@ function getCertsData(parsedJSON, ignoreCertsValidFromBeforeTS = defaults.checkI
                 let titleComponents = cert.title.split(";");
 
                 // CA should be the 0th element, see above example
-                let CAPrefix = "Issued by ";
+                let CAPrefix = "Issued by "; // Note. we need the trailing space
                 let CAPrefixPos = titleComponents[0].indexOf(CAPrefix);
                 let CA = CAPrefixPos >= 0 ? titleComponents[0].substr(CAPrefixPos + CAPrefix.length) : null;
 
@@ -137,36 +137,39 @@ function getCertsData(parsedJSON, ignoreCertsValidFromBeforeTS = defaults.checkI
                     err = null;
 
                     // TODO: Prob split filtering into dedicated Fn
-                    // Only include certs which have been issued since the last run, unless the user has opted to return all by setting checkIntervalSecs to (exactly) 0
+                    // Only include certs which have been issued since the last run, unless the user has opted to return all by setting ignoreCertsValidFromBeforeTS to (exactly) 0
                     if (data.validFromTS >= ignoreCertsValidFromBeforeTS || ignoreCertsValidFromBeforeTS === 0) {
-                        certsData.certs.entries.push(data);
-                    }
+                        // All certs
+                        certsData.allCerts.entries.push(data);
 
-                    let expectedCAMatch = false;
-                    if (data.CA) {
-                        expectedCAs.forEach(ECA => {
-                            if (data.CA.match(ECA)) {
-                                expectedCAMatch = true;
-                            }
-                        });
-                    }
+                        // Certs with an "unexpected" CA
+                        let expectedCAMatch = false;
+                        if (data.CA) {
+                            expectedCAs.forEach(ECA => {
+                                if (data.CA.match(ECA)) {
+                                    expectedCAMatch = true;
+                                }
+                            });
+                        }
 
-                    if (expectedCAMatch === false) {
-                        certsData.unexpectedCA.entries.push(data);
-                    }
+                        if (expectedCAMatch === false) {
+                            certsData.unexpectedCA.entries.push(data);
+                        }
 
-                    if (certsData.byCA.entries[data.CA] === undefined) {
-                        certsData.byCA.entries[data.CA] = [];
-                    }
+                        // All certs, grouped by CA
+                        if (certsData.byCA.entries[data.CA] === undefined) {
+                            certsData.byCA.entries[data.CA] = [];
+                        }
 
-                    certsData.byCA.entries[data.CA].push(data);
+                        certsData.byCA.entries[data.CA].push(data);
+                    }
                 }
             });
         }
     }
 
     // Counts (totals)
-    certsData.certs.count = certsData.certs.entries.length;
+    certsData.allCerts.count = certsData.allCerts.entries.length;
     certsData.unexpectedCA.count = certsData.unexpectedCA.entries.length;
     certsData.byCA.count = Object.keys(certsData.byCA.entries).length;
 
@@ -230,7 +233,7 @@ function getRSSXML(domainNamePattern, get, callback) {
 }
 
 // Maybe this should be an option obj? for at least e.g. config-type options
-function checkCTLogs(get, toJson, domainNamePatterns, checkIntervalSecs = defaults.checkIntervalSecs, ignoreCertsValidToBeforeTS = defaults.ignoreCertsValidToBeforeTS, expectedCAs = defaults.expectedCAs, callback) {
+function checkCTLogs(get, toJson, domainNamePatterns, ignoreCertsValidFromBeforeTS = defaults.ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS = defaults.ignoreCertsValidToBeforeTS, expectedCAs = defaults.expectedCAs, callback) {
     if (!(get instanceof Object)) {
         throw new TypeError("Value of argument \"get\" violates contract.\n\nExpected:\nObject\n\nGot:\n" + _inspect(get));
     }
@@ -243,8 +246,8 @@ function checkCTLogs(get, toJson, domainNamePatterns, checkIntervalSecs = defaul
         throw new TypeError("Value of argument \"domainNamePatterns\" violates contract.\n\nExpected:\nArray\n\nGot:\n" + _inspect(domainNamePatterns));
     }
 
-    if (!(typeof checkIntervalSecs === 'number' && !isNaN(checkIntervalSecs) && checkIntervalSecs >= 0 && checkIntervalSecs <= 4294967295 && checkIntervalSecs === Math.floor(checkIntervalSecs))) {
-        throw new TypeError("Value of argument \"checkIntervalSecs\" violates contract.\n\nExpected:\nuint32\n\nGot:\n" + _inspect(checkIntervalSecs));
+    if (!(typeof ignoreCertsValidFromBeforeTS === 'number')) {
+        throw new TypeError("Value of argument \"ignoreCertsValidFromBeforeTS\" violates contract.\n\nExpected:\nnumber\n\nGot:\n" + _inspect(ignoreCertsValidFromBeforeTS));
     }
 
     if (!(typeof ignoreCertsValidToBeforeTS === 'number')) {
@@ -259,32 +262,36 @@ function checkCTLogs(get, toJson, domainNamePatterns, checkIntervalSecs = defaul
         throw new TypeError("Value of argument \"callback\" violates contract.\n\nExpected:\nFunction\n\nGot:\n" + _inspect(callback));
     }
 
-    const numDomainNamePatterns = domainNamePatterns.length;
-    let numDomainNamePatternsCompleted = 0;
+    const totalNumDomainNamePatterns = domainNamePatterns.length;
+    let totalNumDomainNamePatternsCompleted = 0;
 
     domainNamePatterns.forEach(domainNamePattern => {
         // HTTP2-capable GET of the specific XML feed for the relevant domain name pattern (e.g. %.bbc.co.uk - where % is a wildcard)
-        getRSSXML(domainNamePattern, get, (RSSError, RSSXML) => {
+        getRSSXML(domainNamePattern, get, (RSSError, RSSXML) => // eslint-disable-line consistent-return
+        {
             if (RSSError) {
                 return callback(RSSError, null);
             }
 
             // Raw conversion from XML to JSON
-            convertXMLToJSON(toJson, RSSXML, (convertErr, RSSJSON) => {
+            convertXMLToJSON(toJson, RSSXML, (convertErr, RSSJSON) => // eslint-disable-line consistent-return
+            {
                 if (convertErr) {
                     return callback(convertErr, null);
                 }
 
-                let ignoreCertsValidFromBeforeTS = nowTS - checkIntervalSecs;
-
-                getCertsData(RSSJSON, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, expectedCAs, (getCertsDataErr, certsData) => {
+                // Downloading of RSS feed from crt.sh with filtering and parsing
+                getCertsData(RSSJSON, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, expectedCAs, (getCertsDataErr, certsData) => // eslint-disable-line consistent-return
+                {
                     if (getCertsDataErr) {
                         return callback(getCertsDataErr, null);
                     }
 
-                    numDomainNamePatternsCompleted++;
+                    // Track how many of the configured domainNamePatterns we've completed and...
+                    totalNumDomainNamePatternsCompleted++;
 
-                    if (numDomainNamePatternsCompleted >= numDomainNamePatterns) {
+                    // ...exit when all domainNamePatterns are complete (because this is async)
+                    if (totalNumDomainNamePatternsCompleted >= totalNumDomainNamePatterns) {
                         return callback(null, certsData);
                     }
                 });
@@ -293,9 +300,8 @@ function checkCTLogs(get, toJson, domainNamePatterns, checkIntervalSecs = defaul
     });
 }
 
-module.exports = {
-    checkCTLogs: checkCTLogs
-};
+// We *should* only need to export the user-facing function
+module.exports = checkCTLogs;
 
 function _inspect(input, depth) {
     const maxDepth = 4;
