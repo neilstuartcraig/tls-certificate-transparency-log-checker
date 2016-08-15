@@ -12,7 +12,8 @@ const config = require("../config/tls-certificate-transparency-log-alerter-confi
 const lib = require("./lib/tls-certificate-transparency-log-alerter-lib.js"); // NOTE: Path is relative to build dir (dist/) - local because lib is babel'd
 
 // TODO: Prob rearrange args
-lib.checkCTLogs(get, toJson, config.domainNamePatterns, config.checkIntervalSecs, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
+// checkCTLogs(get: Object, toJson: Function, domainNamePatterns: Array, checkIntervalSecs: uint32 = defaults.checkIntervalSecs, ignoreCertsValidToBeforeTS: number = defaults.ignoreCertsValidToBeforeTS, expectedCAs: Array = defaults.expectedCAs, callback: Function)
+lib.checkCTLogs(get, toJson, config.domainNamePatterns, config.checkIntervalSecs, config.ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
 {
     if(checkCTLogsErr)
     {
