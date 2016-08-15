@@ -1,6 +1,6 @@
-# tls-certificate-transparency-log-alerter
+# tls-certificate-transparency-log-checker
 
-[![Travis CI build status](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-alerter.svg)](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-alerter) (that's just because the tests are not done yet)
+[![Travis CI build status](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-checker.svg)](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-checker) (that's just because the tests are not done yet)
 
 ## HEALTH WARNING!
 **This is still in early stage development and subject to change, prone to bugs and only partially complete.**
@@ -23,17 +23,17 @@ Oh yeah, this is HTTP2-capable in terms of the requests it makes for crt.sh data
 ## Installation
 
 ```
-npm install tls-certificate-transparency-log-alerter --production
+npm install tls-certificate-transparency-log-checker --production
 ```
 
 Note: If you're looking to do development work on this, omit the `--production` argument - but you know that :smile:.
 
-## Using tls-certificate-transparency-log-alerter
+## Using tls-certificate-transparency-log-checker
 
-### Using tls-certificate-transparency-log-alerter as a library
+### Using tls-certificate-transparency-log-checker as a library
 You can simply `require` the library side of this package by listing it as a dependency in your `package.json` file and `require`ing or `import`ing as you would any other library.
 
-### Using tls-certificate-transparency-log-alerter as a command line client (CLI)
+### Using tls-certificate-transparency-log-checker as a command line client (CLI)
 When you `npm install` this package, you'll be a "binary" (yeah, it's not a binary, it's an executable - but that's a convention we have for some weird reason) installed which will allow you to run:
 
 ```
