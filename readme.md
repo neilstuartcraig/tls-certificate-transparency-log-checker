@@ -76,7 +76,6 @@ See the [changelog](./changelog.md) file
 
 
 ## To do
-* Probably remove(/rename to e.g. example) the index.js file and move to the CLI
 * Test and amend problems running as Lambda Function
     * Probably means using the es2015 babel preset instead of the es2015-node6 preset (node 4,5 builds fail on default values currently)
 * Get user feedback and implement improvements and fixes
