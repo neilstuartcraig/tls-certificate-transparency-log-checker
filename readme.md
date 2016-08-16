@@ -41,6 +41,8 @@ When you `npm install -g` this package, NPM will link a "binary" (yeah, it's not
 check-ct-logs <args>
 ```
 
+`tls-certificate-transparency-log-checker` is pretty typical of a \*nix-style CLI program in that it outputs to stdout (which means you can pipe or redirect its output) and it can return non-zero exit codes (see below or `-h`).
+
 #### Arguments
 To show available arguments, you can run:
 
@@ -55,15 +57,17 @@ check-ct-logs -h
 check-ct-logs -d "www.bbc.co.uk"
 ```
 
-##### Find CT logs for \*.bbc.co.uk
+##### Find CT logs for \*.bbc.co.uk, redirecting output JSON to a file
 ```
-check-ct-logs -d "%.bbc.co.uk"
+check-ct-logs -d "%.bbc.co.uk" > out.json
 ```
 
 ##### Find CT logs for www.bbc.co.uk & expecting GlobalSign or DigiCert certs, returning an exit code of 1 if unexpected CA's are found
 ```
 check-ct-logs -d "www.bbc.co.uk" --cas "GlobalSign.*, DigiCert.*" -e --no_all_certs --no_by_ca
 ```
+
+
 
 #### Configuration helper
 There's also a helper "binary" which will create a template config file for you in your current working directory:
