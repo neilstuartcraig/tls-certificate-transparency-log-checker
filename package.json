@@ -12,7 +12,7 @@
     "unit-test": "node_modules/.bin/nyc node_modules/.bin/ava test/*.js",
     "test": "snyk test && node_modules/.bin/nyc node_modules/.bin/ava test/*.js",
     "report": "./node_modules/.bin/nyc report --reporter=lcov --reporter=html && open coverage/index.html",
-    "build": "./node_modules/babel-cli/bin/babel.js src/ --out-dir dist --source-maps",
+    "build": "./node_modules/babel-cli/bin/babel.js src/ --out-dir dist --source-maps inline",
     "snyk-protect": "snyk protect",
     "prepublish": "npm run snyk-protect"
   },
