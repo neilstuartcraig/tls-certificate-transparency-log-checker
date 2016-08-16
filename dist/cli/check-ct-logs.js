@@ -46,6 +46,32 @@ var yargs = require("yargs").usage("Usage: $0 [options]").help("help").option("c
     type: "boolean",
     default: false,
     describe: "if true, the 'entries' property of each allCerts, unexpectedCA and byCA elements of the output JSON will be omitted "
+}).option("domain_name_patterns", {
+    demand: false,
+    type: "array",
+    alias: ["d", "domains", "pattems"],
+    describe: "A space-separated list of (string) domain name patterns to search for e.g. --domain_name_patterns %.example.com b.example.org %.c.example.net"
+}).option("expected_cas", {
+    demand: false,
+    type: "string",
+    alias: ["ca", "cas"],
+    describe: "A comma-separated list of (case-sensitive) stringified regexes to match the Certificate Authorities in the returned certificates against e.g. \".*SomeCA.*, AnotherCA.*\""
+}).option("valid_from", {
+    demand: false,
+    type: "number",
+    alias: ["vf", "from"],
+    describe: "A Unix timestamp (integer number of seconds since the Unix epoch). Certificates whose 'valid from' date is older than this will be omitted from the output"
+}).option("valid_to", {
+    demand: false,
+    type: "number",
+    alias: ["vt", "to", "valid_to"],
+    describe: "A Unix timestamp (integer number of seconds since the Unix epoch). Certificates whose 'valid until' date is newer than this will be omitted from the output"
+}).option("error_if_entries", {
+    demand: false,
+    type: "boolean",
+    default: false,
+    alias: ["e", "error"],
+    describe: "A boolean to determine whether or not to exit with a non-zero (1) return code if any entries are found with provided filters"
 }).option("help", {
     demand: false,
     alias: "h"
@@ -63,7 +89,19 @@ try {
     throw e;
 }
 
-(0, _tlsCertificateTransparencyLogCheckerLib2.default)(_http.get, _xml2json.toJson, config.domainNamePatterns, config.ignoreCertsValidFromBeforeTS, config.ignoreCertsValidToBeforeTS, config.expectedCAs, function (checkCTLogsErr, checkCTLogsRes) {
+var domainNamePatterns = args.domain_name_patterns || config.domainNamePatterns;
+var ignoreCertsValidFromBeforeTS = args.valid_from || config.ignoreCertsValidFromBeforeTS;
+var ignoreCertsValidToBeforeTS = args.valid_to || config.ignoreCertsValidToBeforeTS;
+
+var expectedCAs = config.expectedCAs;
+
+if (args.expected_cas) {
+    expectedCAs = args.expected_cas.split(",").map(function (c) {
+        return new RegExp(c.trim());
+    });
+}
+
+(0, _tlsCertificateTransparencyLogCheckerLib2.default)(_http.get, _xml2json.toJson, domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, expectedCAs, function (checkCTLogsErr, checkCTLogsRes) {
     if (checkCTLogsErr) {
         throw checkCTLogsErr;
     }
@@ -90,5 +128,13 @@ try {
     }
 
     console.log(JSON.stringify(output, null, 2));
+
+    if (args.error_if_entries === true) {
+        for (var _el in output) {
+            if (output[_el].count > 0) {
+                process.exit(1);
+            }
+        }
+    }
 });
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9jbGkvY2hlY2stY3QtbG9ncy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQ0E7O0FBRUE7O0FBRUE7O0FBQ0E7O0FBQ0E7O0FBR0E7Ozs7OztBQUVBLElBQU0sUUFBUSxRQUFRLE9BQVIsRUFDVCxLQURTLENBQ0gscUJBREcsRUFFVCxJQUZTLENBRUosTUFGSSxFQUdULE1BSFMsQ0FHRixRQUhFLEVBSVY7QUFDSTtBQUNBLFlBQVEsS0FGWjtBQUdJLFdBQU8sQ0FBQyxHQUFELEVBQU0sTUFBTixDQUhYO0FBSUksVUFBTSxRQUpWO0FBS0ksYUFBUyxpRUFMYjtBQU1JLGNBQVU7QUFOZCxDQUpVLEVBWVQsTUFaUyxDQVlGLGNBWkUsRUFhVjtBQUNJLFlBQVEsS0FEWjtBQUVJO0FBQ0EsVUFBTSxTQUhWO0FBSUksYUFBUyxLQUpiO0FBS0ksY0FBVTtBQUxkLENBYlUsRUFvQlQsTUFwQlMsQ0FvQkYsZUFwQkUsRUFxQlY7QUFDSSxZQUFRLEtBRFo7QUFFSTtBQUNBLFVBQU0sU0FIVjtBQUlJLGFBQVMsS0FKYjtBQUtJLGNBQVU7QUFMZCxDQXJCVSxFQTRCVCxNQTVCUyxDQTRCRixVQTVCRSxFQTZCVjtBQUNJLFlBQVEsS0FEWjtBQUVJO0FBQ0EsVUFBTSxTQUhWO0FBSUksYUFBUyxLQUpiO0FBS0ksY0FBVTtBQUxkLENBN0JVLEVBb0NULE1BcENTLENBb0NGLFlBcENFLEVBcUNWO0FBQ0ksWUFBUSxLQURaO0FBRUksVUFBTSxTQUZWO0FBR0ksYUFBUyxLQUhiO0FBSUksY0FBVTtBQUpkLENBckNVLEVBMkNULE1BM0NTLENBMkNGLE1BM0NFLEVBNENWO0FBQ0ksWUFBUSxLQURaO0FBRUksV0FBTztBQUZYLENBNUNVLENBQWQ7O0FBSEE7OztBQXFEQSxJQUFJLE9BQU8sTUFBTSxJQUFqQjs7QUFFQSxJQUFJLFNBQVMsSUFBYjtBQUNBLElBQ0E7QUFDSSxhQUFTLFFBQVEsS0FBSyxNQUFiLENBQVQsQ0FESixDQUNtQztBQUNsQyxDQUhELENBSUEsT0FBTSxDQUFOLEVBQ0E7QUFDSSxVQUFNLENBQU47QUFDSDs7QUFFRCxvRkFBeUIsT0FBTyxrQkFBaEMsRUFBb0QsT0FBTyw0QkFBM0QsRUFBeUYsT0FBTywwQkFBaEcsRUFBNEgsT0FBTyxXQUFuSSxFQUFnSixVQUFDLGNBQUQsRUFBaUIsY0FBakIsRUFDaEo7QUFDSSxRQUFHLGNBQUgsRUFDQTtBQUNJLGNBQU0sY0FBTjtBQUNIOztBQUVELFFBQUksU0FBUyxjQUFiOztBQUVKO0FBQ0ksUUFBRyxLQUFLLFlBQVIsRUFDQTtBQUNJLGVBQU8sT0FBTyxRQUFkO0FBQ0g7O0FBRUQsUUFBRyxLQUFLLGFBQVIsRUFDQTtBQUNJLGVBQU8sT0FBTyxZQUFkO0FBQ0g7O0FBRUQsUUFBRyxLQUFLLFFBQVIsRUFDQTtBQUNJLGVBQU8sT0FBTyxJQUFkO0FBQ0g7O0FBRUQsUUFBRyxLQUFLLFVBQVIsRUFDQTtBQUNJLGFBQUksSUFBSSxFQUFSLElBQWMsTUFBZCxFQUNBO0FBQ0ksbUJBQU8sT0FBTyxFQUFQLEVBQVcsT0FBbEI7QUFDSDtBQUNKOztBQUVELFlBQVEsR0FBUixDQUFZLEtBQUssU0FBTCxDQUFlLE1BQWYsRUFBdUIsSUFBdkIsRUFBNkIsQ0FBN0IsQ0FBWjtBQUNILENBbENEIiwiZmlsZSI6ImNoZWNrLWN0LWxvZ3MuanMiLCJzb3VyY2VzQ29udGVudCI6WyJcblwidXNlIHN0cmljdFwiO1xuXG4vLyBDb3JlIGRlcHNcblxuLy8gM3JkIHBhcnR5IGRlcHNcbmltcG9ydCB7Z2V0fSBmcm9tIFwiaHR0cDJcIjtcbmltcG9ydCB7dG9Kc29ufSBmcm9tIFwieG1sMmpzb25cIjtcblxuLy8gTG9jYWwgZGVwc1xuaW1wb3J0IGNoZWNrQ1RMb2dzIGZyb20gXCIuLi9saWIvdGxzLWNlcnRpZmljYXRlLXRyYW5zcGFyZW5jeS1sb2ctY2hlY2tlci1saWIuanNcIjtcblxuY29uc3QgeWFyZ3MgPSByZXF1aXJlKFwieWFyZ3NcIilcbiAgICAudXNhZ2UoXCJVc2FnZTogJDAgW29wdGlvbnNdXCIpXG4gICAgLmhlbHAoXCJoZWxwXCIpXG4gICAgLm9wdGlvbihcImNvbmZpZ1wiLFxuICAgIHtcbiAgICAgICAgLy8gTk9URTogTm90IHN1cmUgd2h5IGJ1dCB5b3UgaGF2ZSB0byB1c2UgLS1jb25maWcgPHBhdGg+XG4gICAgICAgIGRlbWFuZDogZmFsc2UsXG4gICAgICAgIGFsaWFzOiBbXCJjXCIsIFwiY29uZlwiXSxcbiAgICAgICAgdHlwZTogXCJzdHJpbmdcIixcbiAgICAgICAgZGVmYXVsdDogXCIuLi8uLi9jb25maWcvdGxzLWNlcnRpZmljYXRlLXRyYW5zcGFyZW5jeS1sb2ctY2hlY2tlci1jb25maWcuanNcIixcbiAgICAgICAgZGVzY3JpYmU6IFwidGhlIChhYnNvbHV0ZSkgcGF0aCB0byBhIHNwZWNpZmljIGNvbmZpZ3VyYXRpb24gZmlsZSB3aGljaCBvdmVycmlkZXMgZGVmYXVsdHNcIlxuICAgIH0pXG4gICAgLm9wdGlvbihcIm5vX2FsbF9jZXJ0c1wiLFxuICAgIHtcbiAgICAgICAgZGVtYW5kOiBmYWxzZSxcbiAgICAgICAgLy8gYWxpYXM6IFtcIm5vLW5ld1wiXSwgLy8gRE9FU05UIFdPUktcbiAgICAgICAgdHlwZTogXCJib29sZWFuXCIsXG4gICAgICAgIGRlZmF1bHQ6IGZhbHNlLFxuICAgICAgICBkZXNjcmliZTogXCJpZiB0cnVlLCB0aGUgJ2FsbENlcnRzJyBjZXJ0aWZpY2F0ZXMgKGxpdGVyYWxseSBhbGwgY2VydHMgZm91bmQgaW4gdGhlIENUIGxvZ3Mgd2hvc2UgdmFsaWQgZnJvbSBkYXRhIGlzIG5ld2VyIHRoYW4gbm93IC0gY29uZmlnIG9wdGlvbiAnaWdub3JlQ2VydHNWYWxpZEZyb21CZWZvcmVUUycgKSBlbGVtZW50IG9mIHRoZSBvdXRwdXQgSlNPTiB3aWxsIGJlIG9taXR0ZWQgXCJcbiAgICB9KVxuICAgIC5vcHRpb24oXCJub191bmV4cGVjdGVkXCIsXG4gICAge1xuICAgICAgICBkZW1hbmQ6IGZhbHNlLFxuICAgICAgICAvLyBhbGlhczogW1wibm8tdW5leHBlY3RlZFwiXSwgLy8gRE9FU05UIFdPUktcbiAgICAgICAgdHlwZTogXCJib29sZWFuXCIsXG4gICAgICAgIGRlZmF1bHQ6IGZhbHNlLFxuICAgICAgICBkZXNjcmliZTogXCJpZiB0cnVlLCB0aGUgJ3VuZXhwZWN0ZWRDQScgY2VydGlmaWNhdGVzICh0aG9zZSBjZXJ0cyB3aG9zZSBDQSBkb2VzICpub3QqIG1hdGNoIGF0IGxlYXN0IG9uZSBvZiB0aGUgY29uZmlnIG9wdGlvbiAnZXhwZWN0ZWRDQXMnICkgZWxlbWVudCBvZiB0aGUgb3V0cHV0IEpTT04gd2lsbCBiZSBvbWl0dGVkIFwiXG4gICAgfSlcbiAgICAub3B0aW9uKFwibm9fYnlfY2FcIixcbiAgICB7XG4gICAgICAgIGRlbWFuZDogZmFsc2UsXG4gICAgICAgIC8vIGFsaWFzOiBbXCJuby1jYXNcIl0sIC8vIERPRVNOVCBXT1JLXG4gICAgICAgIHR5cGU6IFwiYm9vbGVhblwiLFxuICAgICAgICBkZWZhdWx0OiBmYWxzZSxcbiAgICAgICAgZGVzY3JpYmU6IFwiaWYgdHJ1ZSwgdGhlICdieUNBJyBlbGVtZW50IG9mIHRoZSBvdXRwdXQgSlNPTiB3aWxsIGJlIG9taXR0ZWQgXCJcbiAgICB9KVxuICAgIC5vcHRpb24oXCJub19lbnRyaWVzXCIsXG4gICAge1xuICAgICAgICBkZW1hbmQ6IGZhbHNlLFxuICAgICAgICB0eXBlOiBcImJvb2xlYW5cIixcbiAgICAgICAgZGVmYXVsdDogZmFsc2UsXG4gICAgICAgIGRlc2NyaWJlOiBcImlmIHRydWUsIHRoZSAnZW50cmllcycgcHJvcGVydHkgb2YgZWFjaCBhbGxDZXJ0cywgdW5leHBlY3RlZENBIGFuZCBieUNBIGVsZW1lbnRzIG9mIHRoZSBvdXRwdXQgSlNPTiB3aWxsIGJlIG9taXR0ZWQgXCJcbiAgICB9KVxuICAgIC5vcHRpb24oXCJoZWxwXCIsXG4gICAge1xuICAgICAgICBkZW1hbmQ6IGZhbHNlLFxuICAgICAgICBhbGlhczogXCJoXCJcbiAgICB9XG4pO1xuXG5sZXQgYXJncyA9IHlhcmdzLmFyZ3Y7XG5cbmxldCBjb25maWcgPSBudWxsO1xudHJ5XG57XG4gICAgY29uZmlnID0gcmVxdWlyZShhcmdzLmNvbmZpZyk7IC8vIE5PVEU6IFBhdGggaXMgcmVsYXRpdmUgdG8gYnVpbGQgZGlyIChkaXN0L2NsaS8pXFxcbn1cbmNhdGNoKGUpXG57XG4gICAgdGhyb3cgZTtcbn1cblxuY2hlY2tDVExvZ3MoZ2V0LCB0b0pzb24sIGNvbmZpZy5kb21haW5OYW1lUGF0dGVybnMsIGNvbmZpZy5pZ25vcmVDZXJ0c1ZhbGlkRnJvbUJlZm9yZVRTLCBjb25maWcuaWdub3JlQ2VydHNWYWxpZFRvQmVmb3JlVFMsIGNvbmZpZy5leHBlY3RlZENBcywgKGNoZWNrQ1RMb2dzRXJyLCBjaGVja0NUTG9nc1JlcykgPT5cbntcbiAgICBpZihjaGVja0NUTG9nc0VycilcbiAgICB7XG4gICAgICAgIHRocm93IGNoZWNrQ1RMb2dzRXJyO1xuICAgIH1cblxuICAgIGxldCBvdXRwdXQgPSBjaGVja0NUTG9nc1JlcztcblxuLy8gUmVtb3ZlIHVuZGVzaXJlZCBvdXRwdXQgLSB5ZWFoLCB0aGlzIGlzIGEgY3JhcHB5IG1ldGhvZCBidXQgd2lsbCBkbyBmb3Igbm93XG4gICAgaWYoYXJncy5ub19hbGxfY2VydHMpXG4gICAge1xuICAgICAgICBkZWxldGUgb3V0cHV0LmFsbENlcnRzO1xuICAgIH1cblxuICAgIGlmKGFyZ3Mubm9fdW5leHBlY3RlZClcbiAgICB7XG4gICAgICAgIGRlbGV0ZSBvdXRwdXQudW5leHBlY3RlZENBO1xuICAgIH1cblxuICAgIGlmKGFyZ3Mubm9fYnlfY2EpXG4gICAge1xuICAgICAgICBkZWxldGUgb3V0cHV0LmJ5Q0E7XG4gICAgfVxuXG4gICAgaWYoYXJncy5ub19lbnRyaWVzKVxuICAgIHtcbiAgICAgICAgZm9yKGxldCBlbCBpbiBvdXRwdXQpXG4gICAgICAgIHtcbiAgICAgICAgICAgIGRlbGV0ZSBvdXRwdXRbZWxdLmVudHJpZXM7XG4gICAgICAgIH1cbiAgICB9XG5cbiAgICBjb25zb2xlLmxvZyhKU09OLnN0cmluZ2lmeShvdXRwdXQsIG51bGwsIDIpKTtcbn0pO1xuIl19
+//# sourceMappingURL=/Users/craign04/Documents/BBC/GlobalTrafficMGMT/github/tls-certificate-transparency-log-checker/dist/maps/cli/check-ct-logs.js.map

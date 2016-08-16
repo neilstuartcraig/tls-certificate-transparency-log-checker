@@ -26,7 +26,7 @@ module.exports =
     // Be as general or as specific as you want here...i.e. expect a CA wholesale or just e.g. EV
     expectedCAs:
     [
-        /.*Globalsign.*/i,
+        /.*GlobalSign.*/,
         /.*DigiCert.*/
     ]
 };

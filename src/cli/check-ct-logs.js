@@ -53,6 +53,42 @@ const yargs = require("yargs")
         default: false,
         describe: "if true, the 'entries' property of each allCerts, unexpectedCA and byCA elements of the output JSON will be omitted "
     })
+    .option("domain_name_patterns",
+    {
+        demand: false,
+        type: "array",
+        alias: ["d", "domains", "pattems"],
+        describe: "A space-separated list of (string) domain name patterns to search for e.g. --domain_name_patterns %.example.com b.example.org %.c.example.net"
+    })
+    .option("expected_cas",
+    {
+        demand: false,
+        type: "string",
+        alias: ["ca", "cas"],
+        describe: "A comma-separated list of (case-sensitive) stringified regexes to match the Certificate Authorities in the returned certificates against e.g. \".*SomeCA.*, AnotherCA.*\""
+    })
+    .option("valid_from",
+    {
+        demand: false,
+        type: "number",
+        alias: ["vf", "from"],
+        describe: "A Unix timestamp (integer number of seconds since the Unix epoch). Certificates whose 'valid from' date is older than this will be omitted from the output"
+    })
+    .option("valid_to",
+    {
+        demand: false,
+        type: "number",
+        alias: ["vt", "to", "valid_to"],
+        describe: "A Unix timestamp (integer number of seconds since the Unix epoch). Certificates whose 'valid until' date is newer than this will be omitted from the output"
+    })
+    .option("error_if_entries",
+    {
+        demand: false,
+        type: "boolean",
+        default: false,
+        alias: ["e", "error"],
+        describe: "A boolean to determine whether or not to exit with a non-zero (1) return code if any entries are found with provided filters"
+    })
     .option("help",
     {
         demand: false,
@@ -72,7 +108,21 @@ catch(e)
     throw e;
 }
 
-checkCTLogs(get, toJson, config.domainNamePatterns, config.ignoreCertsValidFromBeforeTS, config.ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
+let domainNamePatterns = args.domain_name_patterns || config.domainNamePatterns;
+let ignoreCertsValidFromBeforeTS = args.valid_from || config.ignoreCertsValidFromBeforeTS;
+let ignoreCertsValidToBeforeTS = args.valid_to || config.ignoreCertsValidToBeforeTS;
+
+let expectedCAs = config.expectedCAs;
+
+if(args.expected_cas)
+{
+    expectedCAs = args.expected_cas.split(",").map((c) =>
+    {
+        return new RegExp(c.trim());
+    });
+}
+
+checkCTLogs(get, toJson, domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
 {
     if(checkCTLogsErr)
     {
@@ -106,4 +156,15 @@ checkCTLogs(get, toJson, config.domainNamePatterns, config.ignoreCertsValidFromB
     }
 
     console.log(JSON.stringify(output, null, 2));
+
+    if(args.error_if_entries === true)
+    {
+        for(let el in output)
+        {
+            if(output[el].count > 0)
+            {
+                process.exit(1);
+            }
+        }
+    }
 });

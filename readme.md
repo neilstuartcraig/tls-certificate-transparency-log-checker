@@ -1,6 +1,7 @@
 # tls-certificate-transparency-log-checker
 
-[![Travis CI build status](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-checker.svg)](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-checker) (that's just because the tests are not done yet)
+[![Travis CI build status](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-checker.svg)](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-checker)  
+
 
 ## HEALTH WARNING!
 **This is still in early stage development and subject to change, prone to bugs and only partially complete.**
@@ -31,37 +32,58 @@ Note: If you're looking to do development work on this, omit the `--production` 
 ## Using tls-certificate-transparency-log-checker
 
 ### Using tls-certificate-transparency-log-checker as a library
-You can simply `require` or `import` the library side of this package by listing it as a dependency in your `package.json` file and `require`ing or `import`ing as you would any other library.
+You can simply `require` or `import` the library side of this package by listing it as a dependency in your `package.json` file and `require`ing or `import`ing as you would any other library. There's an example
 
 ### Using tls-certificate-transparency-log-checker as a command line client (CLI)
-When you `npm install` this package, you'll be a "binary" (yeah, it's not a binary, it's an executable - but that's a convention we have for some weird reason) installed which will allow you to run:
+When you `npm install -g` this package, NPM will link a "binary" (yeah, it's not a binary, it's an executable - but that's a convention we have for some weird reason) which will allow you (from any path on your computer) to run:
 
 ```
 check-ct-logs <args>
 ```
 
-from anywhere on your computer.
-
-You can run:
+#### Arguments
+To show available arguments, you can run:
 
 ```
 check-ct-logs -h
 ```
 
-To show available arguments.
+#### Examples
 
+##### Find CT logs for www.bbc.co.uk
+```
+check-ct-logs -d "www.bbc.co.uk"
+```
+
+##### Find CT logs for \*.bbc.co.uk
+```
+check-ct-logs -d "%.bbc.co.uk"
+```
+
+##### Find CT logs for www.bbc.co.uk & expecting GlobalSign or DigiCert certs, returning an exit code of 1 if unexpected CA's are found
+```
+check-ct-logs -d "www.bbc.co.uk" --cas "GlobalSign.*, DigiCert.*" -e --no_all_certs --no_by_ca
+```
+
+#### Configuration helper
 There's also a helper "binary" which will create a template config file for you in your current working directory:
 
 ```
 create-ct-log-check-config
 ```
 
-You can then edit this and run `check-ct-logs` using this new config file via:
+You can then edit this (the config file is a JSON doc with a simple [commonJS](https://en.wikipedia.org/wiki/CommonJS) wrapper) and run `check-ct-logs` using this new config file via:
 
 ```
 check-ct-logs -c ./tls-certificate-transparency-log-checker-config.js
 ```
 
+#### Non-global installations
+Note that if you are *not* installing globally (i.e. you omit the `-g` from the `npm install -g ...` above) and you want to run the "binary", you'll need to use the configured script and the standard NPM argument semantic of prefixing the arguments with `--` e.g.:
+
+```
+npm run start -- <args>
+```
 
 ## Development
 I've set this project up such that it builds via [babel](https://babeljs.io/). I write code in [atom](https://atom.io/) and use the [language-babel](https://atom.io/packages/language-babel) plugin to automatically build on save - this is configured in the `.language-babel` config file in the project root. Source code is in `<project root>/src/` and transpiled files are in `<project root>/dist/`. Also noteworthy is the use of the babel plugin [babel-plugin-typecheck](https://github.com/codemix/babel-plugin-typecheck) which adds [flow](https://flowtype.org/) style function argument types but additionally over flow, enforces these at runtime (which I like very much, YMMV).
@@ -76,9 +98,11 @@ See the [changelog](./changelog.md) file
 
 
 ## To do
-* Test and amend problems running as Lambda Function
-    * Probably means using the es2015 babel preset instead of the es2015-node6 preset (node 4,5 builds fail on default values currently)
+* Improve testing & coverage
+* Test and amend any problems running as Lambda Function (tests now pass on node v4)
+* Make the mocked tests work with the `http2` library (they currently cheat and use `https` which is API-compatible)
 * Get user feedback and implement improvements and fixes
+* Look at whether it's worthwhile removing the dependency on crt.sh and querying the CT log API's directly (or not)
 
 
 ## Contributing

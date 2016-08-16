@@ -145,7 +145,7 @@ function getCertsData(parsedJSON: Object, ignoreCertsValidFromBeforeTS: number =
                                 expectedCAs.forEach((ECA) =>
                                 {
                                     if(certDetailsJSON.issuer.commonName.match(ECA))
-                                    {
+                                    {                                
                                         expectedCAMatch = true;
                                     }
                                 });
