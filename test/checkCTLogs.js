@@ -61,3 +61,58 @@ test.cb("checkCTLogs with valid inputs (1)", (t) =>
         t.end();
     });
 });
+
+test.cb("checkCTLogs with invalid inputs (bogus summary data in XML)", (t) =>
+{
+    // NOTE: These 2 nocks must match the domainNamePatterns in the test config file
+    nock("https://crt.sh")
+    .get("/atom?identity=%.bbc.co.uk") // i think this can be a regex
+    .reply(200, function replyFn(uri, requestBody) // eslint-disable-line no-unused-vars
+    {
+        return fs.createReadStream(path.join(__dirname, "fixtures/rss-invalid-1.xml"));
+    });
+
+    // Override the config values for readability - ???
+    let ignoreCertsValidFromBeforeTS = nowTS - (86400 * 365); // Ignore certs from > 365 days ago
+    let ignoreCertsValidToBeforeTS = nowTS;
+
+    let domainNamePatterns =
+    [
+        "%.bbc.co.uk"
+    ];
+
+    checkCTLogs(get, toJson, domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
+    {
+        t.is(checkCTLogsErr instanceof Error, true, "checkCTLogsErr must be an error");
+
+        t.is(checkCTLogsRes === null, true, "checkCTLogsRes must be null");
+
+        t.end();
+    });
+});
+
+test.cb("checkCTLogs with HTTP 500 response from RSS endpoint", (t) =>
+{
+    // NOTE: These 2 nocks must match the domainNamePatterns in the test config file
+    nock("https://crt.sh")
+    .get("/atom?identity=%.bbc.co.uk") // i think this can be a regex
+    .reply(500);
+
+    // Override the config values for readability - ???
+    let ignoreCertsValidFromBeforeTS = nowTS - (86400 * 365); // Ignore certs from > 365 days ago
+    let ignoreCertsValidToBeforeTS = nowTS;
+
+    let domainNamePatterns =
+    [
+        "%.bbc.co.uk"
+    ];
+
+    checkCTLogs(get, toJson, domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
+    {
+        t.is(checkCTLogsErr instanceof Error, true, "checkCTLogsErr must be an error");
+
+        t.is(checkCTLogsRes === null, true, "checkCTLogsRes must be null");
+
+        t.end();
+    });
+});

@@ -17,7 +17,7 @@ module.exports =
     ],
 
     // Timestamp representing the date/time after which certificates whose valid from date is older (less than) will be ignored
-    ignoreCertsValidFromBeforeTS: (nowTS - (86400 * 365)), // Ignore certs issued more than 1 day ago
+    ignoreCertsValidFromBeforeTS: nowTS - (86400 * 365), // Ignore certs issued more than 1 day ago
 
     // Timestamp representing the date/time after which certificates whose valid until date is older (less than) will be ignored
     ignoreCertsValidToBeforeTS: nowTS, // Ignore certs which are already expired

@@ -59,7 +59,6 @@ catch(e)
     throw e;
 }
 
-
 checkCTLogs(get, toJson, config.domainNamePatterns, config.ignoreCertsValidFromBeforeTS, config.ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
 {
     if(checkCTLogsErr)

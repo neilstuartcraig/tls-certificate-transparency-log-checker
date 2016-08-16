@@ -23,7 +23,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 // NOTE: Path is relative to build dir (dist/) - local because lib is babel'd
 
 // Local deps
-(0, _tlsCertificateTransparencyLogCheckerLib2.default)(_http.get, _xml2json.toJson, config.domainNamePatterns, config.checkIntervalSecs, config.ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) => {
+(0, _tlsCertificateTransparencyLogCheckerLib2.default)(_http.get, _xml2json.toJson, config.domainNamePatterns, config.ignoreCertsValidFromBeforeTS, config.ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) => {
     if (checkCTLogsErr) {
         throw checkCTLogsErr;
     }

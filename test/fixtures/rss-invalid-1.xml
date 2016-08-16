@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+  <author>
+    <name>crt.sh</name>
+    <uri>https://crt.sh/</uri>
+  </author>
+  <icon>https://crt.sh/favicon.ico</icon>
+  <id>https://crt.sh/?q=%25.bbc.co.uk</id>
+  <link rel="self" type="application/atom+xml" href="https://crt.sh/atom?q=%25.bbc.co.uk"/>
+  <link rel="via" type="text/html" href="https://crt.sh/"/>
+  <title>q=%.bbc.co.uk</title>
+  <updated>2016-08-09T13:23:45Z</updated>
+  <entry>
+    <id>https://crt.sh/?id=2199#q;%.bbc.co.uk</id>
+    <link rel="alternate" type="text/html" href="https://crt.sh/?id=2199"/>
+    <summary type="html">BOGUS-CONTENT
+    </summary>
+    <title>[Certificate] Issued by GlobalSign Organization Validation CA - G2; Valid from 2012-02-27 to 2013-06-04; Serial number 112196edb9c269f043cd82da890166c93db9</title>
+    <published>2012-02-27T10:40:01Z</published>
+    <updated>2013-03-26T09:00:40Z</updated>
+  </entry>
+  <entry>
+    <id>https://crt.sh/?id=6036#q;%.bbc.co.uk</id>
+    <link rel="alternate" type="text/html" href="https://crt.sh/?id=6036"/>
+    <summary type="html">*.myconnect.bbc.co.uk &amp;nbsp; myconnect.bbc.co.uk&lt;br&gt;&lt;br&gt;&lt;div style="font:8pt monospace"&gt;-----BEGIN CERTIFICATE-----&lt;br&gt;MIIFSDCCBDCgAwIBAgISESE8fF4dlnxMMjrjYBVnL0PAMA0GCSqGSIb3DQEBBQUA&lt;br&gt;MF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMwMQYD&lt;br&gt;VQQDEypHbG9iYWxTaWduIE9yZ2FuaXphdGlvbiBWYWxpZGF0aW9uIENBIC0gRzIw&lt;br&gt;HhcNMTIwNzE3MTU1NTAyWhcNMTMwNzA3MTAzNTAyWjB6MQswCQYDVQQGEwJHQjEP&lt;br&gt;MA0GA1UECBMGTG9uZG9uMQ8wDQYDVQQHEwZMb25kb24xKTAnBgNVBAoTIEJyaXRp&lt;br&gt;c2ggQnJvYWRjYXN0aW5nIENvcnBvcmF0aW9uMR4wHAYDVQQDDBUqLm15Y29ubmVj&lt;br&gt;dC5iYmMuY28udWswggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCwXvV9&lt;br&gt;6b2zmLICEYl/iW6sJBk9UsDFDxoSX0raGkliAj5rF7QYwdK5kv59LIEe4npjYcqn&lt;br&gt;n0iDjXHLeaM2ljBsty6HGUE+3+Qex8ghnWB0sixPfnQYEA2R78k7Q6tV3yNPojWc&lt;br&gt;TthhFTlM2FCTR51ifqYRci+WtiEN3TLTgUqUco6FkOVpE/tGLVl7z4q6NKC7WY0m&lt;br&gt;UidUKwqUtu3ALVN1UY7AxYzMrY3zQKCkCOQl3ICCHha1Ww/hhY3AjoM4NycT+Og3&lt;br&gt;al6yai4CdGQiYHDCu3m2td+nJOqwpbxmGOBP/jqB7plCwYgSy4xKSDoocCEpzsRF&lt;br&gt;ENthImy0n5Cpgyl9AgMBAAGjggHjMIIB3zAOBgNVHQ8BAf8EBAMCBaAwTAYDVR0g&lt;br&gt;BEUwQzBBBgkrBgEEAaAyARQwNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv&lt;br&gt;YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wNQYDVR0RBC4wLIIVKi5teWNvbm5lY3Qu&lt;br&gt;YmJjLmNvLnVrghNteWNvbm5lY3QuYmJjLmNvLnVrMAkGA1UdEwQCMAAwHQYDVR0l&lt;br&gt;BBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMEUGA1UdHwQ+MDwwOqA4oDaGNGh0dHA6&lt;br&gt;Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3MvZ3Nvcmdhbml6YXRpb252YWxnMi5jcmww&lt;br&gt;gZYGCCsGAQUFBwEBBIGJMIGGMEcGCCsGAQUFBzAChjtodHRwOi8vc2VjdXJlLmds&lt;br&gt;b2JhbHNpZ24uY29tL2NhY2VydC9nc29yZ2FuaXphdGlvbnZhbGcyLmNydDA7Bggr&lt;br&gt;BgEFBQcwAYYvaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL2dzb3JnYW5pemF0&lt;br&gt;aW9udmFsZzIwHQYDVR0OBBYEFAQjOYyoo612bFmkBNCKSi60Qm0AMB8GA1UdIwQY&lt;br&gt;MBaAFF1Gso3ES3Qcu+31c7Y6tziPdZ5+MA0GCSqGSIb3DQEBBQUAA4IBAQCDvsaG&lt;br&gt;g47JW4Q4QS7lAuJpfswIXOBCJs8ducnK5oW72Xv3RQB7g1XVJg3eTbcQ7/2Vg5+I&lt;br&gt;ca2udkbej3Aw14ffV2qIIKt34rIfBKPbV9Y3ztQLZZINuWxiDyuJwPovRVt3kYXI&lt;br&gt;AyT3iFJYdEzW3t1a2HH9IV2vflBCz3xfh7k0oPA6fd4hYj8nAT8uvnl2sAprbYbP&lt;br&gt;SDFK6LSnAFpZh33T1/A8EcGq20FUh32nQzasEz79a1L4zVEak85hke9+tK+Wkf8/&lt;br&gt;1noV5QDC2/lK7D/lLVDk5cfzX5U156tN1HUweWSrVAEPXaT9a97Qzs7akkRKlJ0O&lt;br&gt;mDaBfCVths8xHgzF&lt;br&gt;-----END CERTIFICATE-----&lt;/div&gt;
+    </summary>
+    <title>[Certificate] Issued by GlobalSign Organization Validation CA - G2; Valid from 2012-07-17 to 2013-07-07; Serial number 11213c7c5e1d967c4c323ae36015672f43c0</title>
+    <published>2012-07-17T15:55:02Z</published>
+    <updated>2013-03-26T09:01:50Z</updated>
+  </entry>
+</feed>

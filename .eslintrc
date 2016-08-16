@@ -12,6 +12,8 @@
     "rules":
     {
         "complexity": [2, 12],
-        "babel/object-shorthand": ["error", "never"]
+        "babel/object-shorthand": ["error", "never"],
+        "ava/no-cb-test": 0,
+        "ava/max-asserts": ["error", 15]
     }
 }

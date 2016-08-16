@@ -11,7 +11,7 @@ var _x = require("x509.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Defaults (used in function definitions)
-const nowTS = new Date().getTime() / 1000; // NOTE: JS timestamps are in msec
+const nowTS = parseInt(new Date().getTime() / 1000, 10); // NOTE: JS timestamps are in msec
 
 
 // 3rd party deps
@@ -21,7 +21,54 @@ const defaults = {
     expectedCAs: [] // Default is expect none
 };
 
-function getCertsData(parsedJSON, ignoreCertsValidFromBeforeTS = defaults.ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS = defaults.ignoreCertsValidToBeforeTS, expectedCAs = defaults.expectedCAs = defaults.expectedCAs, callback) {
+// NOTE: This is sync for the moment which is probably a bad idea - making async will need work on getCertsData() (below)
+function getCertDetails(rawCertSummary) {
+    if (!(rawCertSummary instanceof Object)) {
+        throw new TypeError("Value of argument \"rawCertSummary\" violates contract.\n\nExpected:\nObject\n\nGot:\n" + _inspect(rawCertSummary));
+    }
+
+    let ret = null;
+
+    let rawCertText = rawCertSummary["$t"].match(/.*(-----BEGIN CERTIFICATE-----.*-----END CERTIFICATE-----).*/);
+
+    if (rawCertText !== null) {
+        let certText = rawCertText[1].replace(/<br>/g, _os2.default.EOL);
+
+        let parsedCertJSON = (0, _x.parseCert)(certText);
+
+        let certJSON = {
+            serial: parsedCertJSON.serial || null,
+            subject: parsedCertJSON.subject || {}, // eslint-disable-line object-curly-newline
+            issuer: parsedCertJSON.issuer || {}, // eslint-disable-line object-curly-newline
+            validFrom: parsedCertJSON.notBefore || null,
+            validFromTS: 0, // Will be updated below
+            validTo: parsedCertJSON.notAfter || null,
+            validToTS: 0, // Will be updated below
+            daysRemaining: 0, // Will be updated below
+            SAN: parsedCertJSON.altNames || []
+        };
+
+        try {
+            certJSON.validFromTS = parseInt(new Date(certJSON.validFrom).getTime() / 1000, 10); // need to remove last 3 chars as JS use MSec TS's
+        } catch (e) {
+            certJSON.validFromTS = 0; // Is there anything more sensible which could be done?
+        }
+
+        try {
+            certJSON.validToTS = parseInt(new Date(certJSON.validTo).getTime() / 1000, 10); // need to remove last 3 chars as JS use MSec TS's
+        } catch (e) {
+            certJSON.validFromTS = 0; // Is there anything more sensible which could be done?
+        }
+
+        certJSON.daysRemaining = Math.floor((certJSON.validToTS - nowTS) / 86400);
+
+        ret = certJSON;
+    }
+
+    return ret; // null if error, object otherwise
+}
+
+function getCertsData(parsedJSON, ignoreCertsValidFromBeforeTS = defaults.ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS = defaults.ignoreCertsValidToBeforeTS, expectedCAs = defaults.expectedCAs, callback) {
     if (!(parsedJSON instanceof Object)) {
         throw new TypeError("Value of argument \"parsedJSON\" violates contract.\n\nExpected:\nObject\n\nGot:\n" + _inspect(parsedJSON));
     }
@@ -83,96 +130,41 @@ function getCertsData(parsedJSON, ignoreCertsValidFromBeforeTS = defaults.ignore
     if (parsedJSON.feed) {
         if (parsedJSON.feed.entry instanceof Array) {
             parsedJSON.feed.entry.forEach(cert => {
-                // NOTE: Might want to split this out in separate fn's:
+                // Use x509.js to parse the raw cert string into consistent JSON
+                let certDetailsJSON = getCertDetails(cert.summary);
 
-                // Extract the info elements from the title, example title format:
-                // [Certificate] Issued by GlobalSign Organization Validation CA - SHA256 - G2; Valid from 2015-01-13 to 2017-01-13; Serial number 1121d0ef260d17b3f15bd22f277c980d735c
-                let titleComponents = cert.title.split(";");
+                if (certDetailsJSON !== null) {
+                    // Ignore certs whose validToTS is < ignoreCertsValidToBeforeTS
+                    if (certDetailsJSON.validToTS >= ignoreCertsValidToBeforeTS) {
+                        // NOTE: This may be too coarse
+                        err = null;
 
-                // CA should be the 0th element, see above example
-                let CAPrefix = "Issued by "; // Note. we need the trailing space
-                let CAPrefixPos = titleComponents[0].indexOf(CAPrefix);
-                let CA = CAPrefixPos >= 0 ? titleComponents[0].substr(CAPrefixPos + CAPrefix.length) : null;
+                        // Only include certs which have been issued since the last run, unless the user has opted to return all by setting ignoreCertsValidFromBeforeTS to (exactly) 0
+                        if (certDetailsJSON.validFromTS >= ignoreCertsValidFromBeforeTS || ignoreCertsValidFromBeforeTS === 0) {
+                            // All certs
+                            certsData.allCerts.entries.push(certDetailsJSON);
 
-                // The valid from/to should be the 1st element, see above example
-                let dates = titleComponents[1].match(/Valid from ([0-9]{4}-[0-9]{2}-[0-9]{2}) to ([0-9]{4}-[0-9]{2}-[0-9]{2})/i);
+                            // Certs with an "unexpected" CA
+                            let expectedCAMatch = false;
+                            if (Object.keys(certDetailsJSON.issuer).length > 0) {
+                                expectedCAs.forEach(ECA => {
+                                    if (certDetailsJSON.issuer.commonName.match(ECA)) {
+                                        expectedCAMatch = true;
+                                    }
+                                });
+                            }
 
-                let validFrom = dates[1] || null;
-                let validFromTS = new Date(validFrom + " 00:00:00").getTime() / 1000; // need to remove last 3 chars as JS use MSec TS's
+                            if (expectedCAMatch === false) {
+                                certsData.unexpectedCA.entries.push(certDetailsJSON);
+                            }
 
-                let validTo = dates[2] || null;
-                let validToTS = new Date(validTo + " 23:59:59").getTime() / 1000; // need to remove last 3 chars as JS use MSec TS's
+                            // All certs, grouped by CA
+                            if (certsData.byCA.entries[certDetailsJSON.issuer.commonName] === undefined) {
+                                certsData.byCA.entries[certDetailsJSON.issuer.commonName] = [];
+                            }
 
-                // Ignore certs whose validToTS is < ignoreCertsValidToBeforeTS
-                if (validToTS >= ignoreCertsValidToBeforeTS) {
-                    let daysRemaining = Math.floor((validToTS - nowTS) / 86400);
-
-                    // Serial number
-                    let serialComponents = titleComponents[2].split(" ");
-                    let serial = serialComponents[serialComponents.length - 1];
-
-                    // Common name and SANs
-                    // $t example format: emp.bbc.com &nbsp; emp.live.bbc.com &nbsp; smp.bbc.com &nbsp; smp.live.bbc.com<br><br><div style=\"font:8pt monospace\">-----BEGIN CERTIFICATE-----<br>MIIF+jCCBOKgAwIBAgISESFlByoLUbb9vwNQTSbGYO02MA0GCSqGSIb3DQEBCwUA<br>MGYxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTwwOgYD<br>VQQDEzNHbG9iYWxTaWduIE9yZ2FuaXphdGlvbiBWYWxpZGF0aW9uIENBIC0gU0hB<br>MjU2IC0gRzIwHhcNMTUwODEzMTQyNjEyWhcNMTYwODEzMTQyNjEyWjBzMQswCQYD<br>VQQGEwJHQjEPMA0GA1UECBMGTG9uZG9uMQ8wDQYDVQQHEwZMb25kb24xKTAnBgNV<br>BAoTIEJyaXRpc2ggQnJvYWRjYXN0aW5nIENvcnBvcmF0aW9uMRcwFQYDVQQDEw5l<br>bXAuYmJjaS5jby51azCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOgE<br>EzAbdIjKqSAH3A/ZyBfGPDQ76BLWQh9oyo84uZzNtY7JvFGz+bSoEPEc9SHAzs7C<br>shyLREzyYaSnepwyYwwj47fqa2NqBp+RlMFD2ZifxsAyJHl3klIEesgMij42wK9q<br>xnBFWG0CY1rRwdDZtR7K80l8vgeLp2wvqJbU50juesYHTIfB9xuAkkNz0xOkwiid<br>ILBEmY41JnLqKYbC3srtaiXhNlIojZi7kJMemFyg7BumTy6vJsNC/bSPOXiveZrZ<br>y2eQY4N2++5OV7xoVbF8nc95EgDBiSrpKOpbFTKcz5Al3XxJ6u7UVjzuWM97hq8M<br>Ux4ezdYPcyhVeImUmYcCAwEAAaOCApMwggKPMA4GA1UdDwEB/wQEAwIFoDBJBgNV<br>HSAEQjBAMD4GBmeBDAECAjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9i<br>YWxzaWduLmNvbS9yZXBvc2l0b3J5LzCB2QYDVR0RBIHRMIHOgg5lbXAuYmJjaS5j<br>by51a4INZW1wLmJiYy5jby51a4ILZW1wLmJiYy5jb22CDnNtcC5iYmNpLmNvLnVr<br>gg1zbXAuYmJjLmNvLnVrggtzbXAuYmJjLmNvbYITZW1wLmxpdmUuYmJjaS5jby51<br>a4ISZW1wLmxpdmUuYmJjLmNvLnVrghBlbXAubGl2ZS5iYmMuY29tghNzbXAubGl2<br>ZS5iYmNpLmNvLnVrghJzbXAubGl2ZS5iYmMuY28udWuCEHNtcC5saXZlLmJiYy5j<br>b20wCQYDVR0TBAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwSQYD<br>VR0fBEIwQDA+oDygOoY4aHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9ncy9nc29y<br>Z2FuaXphdGlvbnZhbHNoYTJnMi5jcmwwgaAGCCsGAQUFBwEBBIGTMIGQME0GCCsG<br>AQUFBzAChkFodHRwOi8vc2VjdXJlLmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc29y<br>Z2FuaXphdGlvbnZhbHNoYTJnMnIxLmNydDA/BggrBgEFBQcwAYYzaHR0cDovL29j<br>c3AyLmdsb2JhbHNpZ24uY29tL2dzb3JnYW5pemF0aW9udmFsc2hhMmcyMB0GA1Ud<br>DgQWBBSqjg7j2iVdEE6LFy4Bl82DctMBtTAfBgNVHSMEGDAWgBSW3mHxvRwWKVMc<br>wMx9O4MAQOYafDANBgkqhkiG9w0BAQsFAAOCAQEAE1xfeLbp9xCf8G3kJPXzVZ/l<br>g/iDjAXUDV28Woat/+ZW/UEqtFRI0jL0NViNyTfbIxRy9FO4b62DB2YOzVHOo55r<br>GABnNtkbZVIfiw3ecLo696dr2yg+sfDiubO6ubmZGSVQAmJK/t3DN0Sd8UmE8RgZ<br>RXzNZbtOCq6rZtnLTJq4f/wHp8ikW9rWhBpSvwk4CsKD7g1yliUmzYk7dh7Puwbf<br>9NiDfQ6zEKiFq7HYJBHcN/2xI5W/rdEFz3nJWnXS87y2WiFyR2Qg9uqU8+kehApb<br>-----END CERTIFICATE-----</div>
-                    let summaryComponents = cert.summary["$t"].split("<br>");
-
-                    let nameComponents = summaryComponents[0].split("&nbsp;");
-
-                    let commonName = nameComponents.shift().trim();
-                    let SAN = nameComponents.map(n => {
-                        return n.trim();
-                    });
-
-                    // Cert
-                    // TODO: determine which format the cert is in - doesn't seem to be b64
-                    let certRaw = cert.summary["$t"].match(/.*(-----BEGIN CERTIFICATE-----.*-----END CERTIFICATE-----).*/);
-                    let parsedCert = certRaw[1].replace(/<br>/g, _os2.default.EOL);
-                    // let decodedCert = Buffer.from(parsedCert, "ascii").toString("utf8");
-
-                    let certJSON = (0, _x.parseCert)(parsedCert);
-
-                    console.log("CERT: " + JSON.stringify(certJSON, null, 2));
-
-                    let data = {
-                        commonName: commonName,
-                        SAN: SAN,
-                        serial: serial,
-                        validFrom: validFrom,
-                        validFromTS: validFromTS,
-                        validTo: validTo,
-                        validToTS: validToTS,
-                        daysRemaining: daysRemaining,
-                        CA: CA
-                    };
-
-                    // NOTE: This may be too coarse
-                    err = null;
-
-                    // TODO: Prob split filtering into dedicated Fn
-                    // Only include certs which have been issued since the last run, unless the user has opted to return all by setting ignoreCertsValidFromBeforeTS to (exactly) 0
-                    if (data.validFromTS >= ignoreCertsValidFromBeforeTS || ignoreCertsValidFromBeforeTS === 0) {
-                        // All certs
-                        certsData.allCerts.entries.push(data);
-
-                        // Certs with an "unexpected" CA
-                        let expectedCAMatch = false;
-                        if (data.CA) {
-                            expectedCAs.forEach(ECA => {
-                                if (data.CA.match(ECA)) {
-                                    expectedCAMatch = true;
-                                }
-                            });
+                            certsData.byCA.entries[certDetailsJSON.issuer.commonName].push(certDetailsJSON);
                         }
-
-                        if (expectedCAMatch === false) {
-                            certsData.unexpectedCA.entries.push(data);
-                        }
-
-                        // All certs, grouped by CA
-                        if (certsData.byCA.entries[data.CA] === undefined) {
-                            certsData.byCA.entries[data.CA] = [];
-                        }
-
-                        certsData.byCA.entries[data.CA].push(data);
                     }
                 }
             });
