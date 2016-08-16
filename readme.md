@@ -50,6 +50,18 @@ check-ct-logs -h
 
 To show available arguments.
 
+There's also a helper "binary" which will create a template config file for you in your current working directory:
+
+```
+create-ct-log-check-config
+```
+
+You can then edit this and run `check-ct-logs` using this new config file via:
+
+```
+check-ct-logs -c ./tls-certificate-transparency-log-checker-config.js
+```
+
 
 ## Development
 I've set this project up such that it builds via [babel](https://babeljs.io/). I write code in [atom](https://atom.io/) and use the [language-babel](https://atom.io/packages/language-babel) plugin to automatically build on save - this is configured in the `.language-babel` config file in the project root. Source code is in `<project root>/src/` and transpiled files are in `<project root>/dist/`. Also noteworthy is the use of the babel plugin [babel-plugin-typecheck](https://github.com/codemix/babel-plugin-typecheck) which adds [flow](https://flowtype.org/) style function argument types but additionally over flow, enforces these at runtime (which I like very much, YMMV).
@@ -64,9 +76,9 @@ See the [changelog](./changelog.md) file
 
 
 ## To do
-* Add some unit tests
-* lint and refactor the code to be less horrible
+* Probably remove(/rename to e.g. example) the index.js file and move to the CLI
 * Test and amend problems running as Lambda Function
+    * Probably means using the es2015 babel preset instead of the es2015-node6 preset (node 4,5 builds fail on default values currently)
 * Get user feedback and implement improvements and fixes
 
 

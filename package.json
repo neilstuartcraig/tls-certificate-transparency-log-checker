@@ -2,7 +2,7 @@
   "name": "tls-certificate-transparency-log-checker",
   "version": "1.0.0",
   "description": "A super simple program to check TLS certificate transparency logs for one or more domain name patterns, ",
-  "main": "dist/index.js",
+  "main": "dist/cli/check-ct-logs.js",
   "scripts": {
     "start": "node .",
     "conf": "node ./dist/cli/create-ct-log-check-config.js",

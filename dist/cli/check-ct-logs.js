@@ -1,4 +1,4 @@
-#!/user/env/node
+#!/usr/bin/env node
 
 "use strict";
 
@@ -16,7 +16,7 @@ var _tlsCertificateTransparencyLogCheckerLib2 = _interopRequireDefault(_tlsCerti
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const yargs = require("yargs").usage("Usage: $0 [options]").option("config", {
+const yargs = require("yargs").usage("Usage: $0 [options]").help("help").option("config", {
     // NOTE: Not sure why but you have to use --config <path>
     demand: false,
     alias: ["c", "conf"],
@@ -41,6 +41,14 @@ const yargs = require("yargs").usage("Usage: $0 [options]").option("config", {
     type: "boolean",
     default: false,
     describe: "if true, the 'byCA' element of the output JSON will be omitted "
+}).option("no_entries", {
+    demand: false,
+    type: "boolean",
+    default: false,
+    describe: "if true, the 'entries' property of each allCerts, unexpectedCA and byCA elements of the output JSON will be omitted "
+}).option("help", {
+    demand: false,
+    alias: "h"
 });
 
 // Local deps
@@ -75,5 +83,12 @@ try {
         delete output.byCA;
     }
 
+    if (args.no_entries) {
+        for (let el in output) {
+            delete output[el].entries;
+        }
+    }
+
     console.log(JSON.stringify(output, null, 2));
 });
+//# sourceMappingURL=/Users/craign04/Documents/BBC/GlobalTrafficMGMT/github/tls-certificate-transparency-log-checker/dist/maps/cli/check-ct-logs.js.map

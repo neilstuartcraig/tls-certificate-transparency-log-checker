@@ -1,4 +1,4 @@
-#!/user/env/node
+#!/usr/bin/env node
 
 "use strict";
 
@@ -36,3 +36,4 @@ const destOpts = {
 
 // Stream/pipe the template config file into a local (pwd) file
 (0, _fs.createReadStream)(src, srcOpts).pipe((0, _fs.createWriteStream)(dest, destOpts));
+//# sourceMappingURL=/Users/craign04/Documents/BBC/GlobalTrafficMGMT/github/tls-certificate-transparency-log-checker/dist/maps/cli/create-ct-log-check-config.js.map
