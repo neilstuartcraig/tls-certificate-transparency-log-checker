@@ -1,5 +1,8 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.2.0
+* Set CLI output to full width of terminal
+
 ## v2.1.0
 * Add --version CLI arg
 

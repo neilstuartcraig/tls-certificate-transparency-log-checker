@@ -79,6 +79,8 @@ var yargs = require("yargs").usage("Usage: $0 [options]").help("help").option("c
     describe: "Show the version number and exit"
 });
 
+yargs.wrap(yargs.terminalWidth());
+
 var args = yargs.argv;
 
 // Show version number from package.json and exit with return code 0

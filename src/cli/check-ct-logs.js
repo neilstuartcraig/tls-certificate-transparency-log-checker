@@ -102,6 +102,8 @@ const yargs = require("yargs")
     }
 );
 
+yargs.wrap(yargs.terminalWidth());
+
 let args = yargs.argv;
 
 // Show version number from package.json and exit with return code 0
