@@ -44,8 +44,8 @@ var yargs = require("yargs").usage("Usage: $0 [options]").help("help").option("c
 }).option("domain_name_patterns", {
     demand: false,
     type: "array",
-    alias: ["d", "domains", "pattems"],
-    describe: "A space-separated list of (string) domain name patterns to search for e.g. --domain_name_patterns %.example.com b.example.org %.c.example.net"
+    alias: ["d", "domains", "patterns"],
+    describe: "A space-separated list of quoted (string) domain name patterns to search for e.g. --domain_name_patterns \"%.example.com\" \"b.example.org\" \"%.c.example.net\""
 }).option("expected_cas", {
     demand: false,
     type: "string",

@@ -1,5 +1,8 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.0.1
+* Correct typo in CLI argument alias "--pattern" and improve example
+
 ## v2.0.0
 * Switch http2 lib for core https due to testing and lack of real need
 * Move some 3rd party dependencies to the lib as there's no need for them to be userland
