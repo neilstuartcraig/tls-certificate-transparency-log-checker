@@ -43,7 +43,7 @@ test.cb("checkCTLogs with valid inputs (1)", (t) =>
         t.is(Object.keys(checkCTLogsRes).length === 3, true, "checkCTLogsRes must have 3 keys");
 
         t.is(Object.keys(checkCTLogsRes.allCerts).length === 2, true, "checkCTLogsRes.allCerts must have 2 keys");
-        t.is(checkCTLogsRes.allCerts.count, 52, "checkCTLogsRes.allCerts.count must be 4 (due to data source)");
+        t.is(checkCTLogsRes.allCerts.count, 51, "checkCTLogsRes.allCerts.count must be 4 (due to data source)");
         t.is(Object.keys(checkCTLogsRes.allCerts.entries).length, checkCTLogsRes.allCerts.count, "checkCTLogsRes.allCerts.entries must have 4 keys (due to data source)");
 
         t.is(Object.keys(checkCTLogsRes.unexpectedCA).length === 2, true, "checkCTLogsRes.unexpectedCA must have 2 keys");

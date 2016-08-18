@@ -1,5 +1,8 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.3.2
+* Fix bug in test assertion
+
 ## v2.3.1
 * Snyk badge!
 
