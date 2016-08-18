@@ -156,7 +156,7 @@ function getCertsData(parsedJSON: Object, ignoreCertsValidFromBeforeTS: number =
                 if(certDetailsJSON instanceof Object)
                 {
                     // Ignore certs whose validToTS is < ignoreCertsValidToBeforeTS
-                    if(certDetailsJSON.validToTS >= ignoreCertsValidToBeforeTS)
+                    if(certDetailsJSON.validToTS <= ignoreCertsValidToBeforeTS)
                     {
                         // NOTE: This may be too coarse
                         err = null;

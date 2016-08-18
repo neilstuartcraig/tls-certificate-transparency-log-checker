@@ -1,5 +1,8 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.3.4
+* Fix bug in date handling, "valid to before" was the wrong way around
+
 ## v2.3.3
 * Fix NPM dependencies and associated docs
 
