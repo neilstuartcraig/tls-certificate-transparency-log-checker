@@ -6,15 +6,10 @@
 
 // 3rd party deps
 
-var _http = require("http2");
 
-var _xml2json = require("xml2json");
+// Local deps
 
 var _tlsCertificateTransparencyLogCheckerLib = require("../lib/tls-certificate-transparency-log-checker-lib.js");
-
-var _tlsCertificateTransparencyLogCheckerLib2 = _interopRequireDefault(_tlsCertificateTransparencyLogCheckerLib);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var yargs = require("yargs").usage("Usage: $0 [options]").help("help").option("config", {
     // NOTE: Not sure why but you have to use --config <path>
@@ -77,9 +72,6 @@ var yargs = require("yargs").usage("Usage: $0 [options]").help("help").option("c
     alias: "h"
 });
 
-// Local deps
-
-
 var args = yargs.argv;
 
 var config = null;
@@ -101,7 +93,7 @@ if (args.expected_cas) {
     });
 }
 
-(0, _tlsCertificateTransparencyLogCheckerLib2.default)(_http.get, _xml2json.toJson, domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, expectedCAs, function (checkCTLogsErr, checkCTLogsRes) {
+(0, _tlsCertificateTransparencyLogCheckerLib.checkCTLogs)(get, toJson, domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, expectedCAs, function (checkCTLogsErr, checkCTLogsRes) {
     if (checkCTLogsErr) {
         throw checkCTLogsErr;
     }
@@ -137,4 +129,3 @@ if (args.expected_cas) {
         }
     }
 });
-//# sourceMappingURL=/Users/craign04/Documents/BBC/GlobalTrafficMGMT/github/tls-certificate-transparency-log-checker/dist/maps/cli/check-ct-logs.js.map

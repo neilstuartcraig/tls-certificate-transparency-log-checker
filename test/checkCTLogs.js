@@ -7,14 +7,10 @@ import path from "path";
 // 3rd party deps
 import test from "ava";
 
-// TODO: Make this work with HTTP2
-import {get} from "https"; /// should be HTTP2
-
-import {toJson} from "xml2json";
 import nock from "nock";
 
 // Local deps
-import checkCTLogs from "../dist/lib/tls-certificate-transparency-log-checker-lib.js";
+import {checkCTLogs} from "../dist/lib/tls-certificate-transparency-log-checker-lib.js";
 import config from "../config/tls-certificate-transparency-log-checker-config.js"; // NOTE: Path is relative to build dir (dist/)
 
 const nowTS = parseInt(new Date().getTime() / 1000, 10);
@@ -40,7 +36,7 @@ test.cb("checkCTLogs with valid inputs (1)", (t) =>
     let ignoreCertsValidFromBeforeTS = nowTS - (86400 * 365); // Ignore certs from > 365 days ago
     let ignoreCertsValidToBeforeTS = nowTS;
 
-    checkCTLogs(get, toJson, config.domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
+    checkCTLogs(config.domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
     {
         t.is(checkCTLogsErr === null, true, "checkCTLogsErr must be null");
 
@@ -81,7 +77,7 @@ test.cb("checkCTLogs with invalid inputs (bogus summary data in XML)", (t) =>
         "%.bbc.co.uk"
     ];
 
-    checkCTLogs(get, toJson, domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
+    checkCTLogs(domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
     {
         t.is(checkCTLogsErr instanceof Error, true, "checkCTLogsErr must be an error");
 
@@ -107,7 +103,7 @@ test.cb("checkCTLogs with HTTP 500 response from RSS endpoint", (t) =>
         "%.bbc.co.uk"
     ];
 
-    checkCTLogs(get, toJson, domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
+    checkCTLogs(domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
     {
         t.is(checkCTLogsErr instanceof Error, true, "checkCTLogsErr must be an error");
 

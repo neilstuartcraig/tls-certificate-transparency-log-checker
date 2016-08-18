@@ -1,0 +1,43 @@
+{
+  "feed": {
+    "xmlns": "http://www.w3.org/2005/Atom",
+    "xml:lang": "en",
+    "author": {
+      "name": "crt.sh",
+      "uri": "https://crt.sh/"
+    },
+    "icon": "https://crt.sh/favicon.ico",
+    "id": "https://crt.sh/?q=%25.bbc.co.uk",
+    "link": [
+      {
+        "rel": "self",
+        "type": "application/atom+xml",
+        "href": "https://crt.sh/atom?q=%25.bbc.co.uk"
+      },
+      {
+        "rel": "via",
+        "type": "text/html",
+        "href": "https://crt.sh/"
+      }
+    ],
+    "title": "q=%.bbc.co.uk",
+    "updated": "2016-08-09T13:23:45Z",
+    "entry": [
+      {
+        "id": "https://crt.sh/?id=6036#q;%.bbc.co.uk",
+        "link": {
+          "rel": "alternate",
+          "type": "text/html",
+          "href": "https://crt.sh/?id=6036"
+        },
+        "summary": {
+          "type": "html",
+          "$t": "*.myconnect.bbc.co.uk &nbsp; myconnect.bbc.co.uk<br><br><div style=\"font:8pt monospace\">-----BEGIN CERTIFICATE-----<br>MIIFSDCCBDCgAwIBAgISESE8fF4dlnxMMjrjYBVnL0PAMA0GCSqGSIb3DQEBBQUA<br>MF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMwMQYD<br>VQQDEypHbG9iYWxTaWduIE9yZ2FuaXphdGlvbiBWYWxpZGF0aW9uIENBIC0gRzIw<br>HhcNMTIwNzE3MTU1NTAyWhcNMTMwNzA3MTAzNTAyWjB6MQswCQYDVQQGEwJHQjEP<br>MA0GA1UECBMGTG9uZG9uMQ8wDQYDVQQHEwZMb25kb24xKTAnBgNVBAoTIEJyaXRp<br>c2ggQnJvYWRjYXN0aW5nIENvcnBvcmF0aW9uMR4wHAYDVQQDDBUqLm15Y29ubmVj<br>dC5iYmMuY28udWswggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCwXvV9<br>6b2zmLICEYl/iW6sJBk9UsDFDxoSX0raGkliAj5rF7QYwdK5kv59LIEe4npjYcqn<br>n0iDjXHLeaM2ljBsty6HGUE+3+Qex8ghnWB0sixPfnQYEA2R78k7Q6tV3yNPojWc<br>TthhFTlM2FCTR51ifqYRci+WtiEN3TLTgUqUco6FkOVpE/tGLVl7z4q6NKC7WY0m<br>UidUKwqUtu3ALVN1UY7AxYzMrY3zQKCkCOQl3ICCHha1Ww/hhY3AjoM4NycT+Og3<br>al6yai4CdGQiYHDCu3m2td+nJOqwpbxmGOBP/jqB7plCwYgSy4xKSDoocCEpzsRF<br>ENthImy0n5Cpgyl9AgMBAAGjggHjMIIB3zAOBgNVHQ8BAf8EBAMCBaAwTAYDVR0g<br>BEUwQzBBBgkrBgEEAaAyARQwNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv<br>YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wNQYDVR0RBC4wLIIVKi5teWNvbm5lY3Qu<br>YmJjLmNvLnVrghNteWNvbm5lY3QuYmJjLmNvLnVrMAkGA1UdEwQCMAAwHQYDVR0l<br>BBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMEUGA1UdHwQ+MDwwOqA4oDaGNGh0dHA6<br>Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3MvZ3Nvcmdhbml6YXRpb252YWxnMi5jcmww<br>gZYGCCsGAQUFBwEBBIGJMIGGMEcGCCsGAQUFBzAChjtodHRwOi8vc2VjdXJlLmds<br>b2JhbHNpZ24uY29tL2NhY2VydC9nc29yZ2FuaXphdGlvbnZhbGcyLmNydDA7Bggr<br>BgEFBQcwAYYvaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL2dzb3JnYW5pemF0<br>aW9udmFsZzIwHQYDVR0OBBYEFAQjOYyoo612bFmkBNCKSi60Qm0AMB8GA1UdIwQY<br>MBaAFF1Gso3ES3Qcu+31c7Y6tziPdZ5+MA0GCSqGSIb3DQEBBQUAA4IBAQCDvsaG<br>g47JW4Q4QS7lAuJpfswIXOBCJs8ducnK5oW72Xv3RQB7g1XVJg3eTbcQ7/2Vg5+I<br>ca2udkbej3Aw14ffV2qIIKt34rIfBKPbV9Y3ztQLZZINuWxiDyuJwPovRVt3kYXI<br>AyT3iFJYdEzW3t1a2HH9IV2vflBCz3xfh7k0oPA6fd4hYj8nAT8uvnl2sAprbYbP<br>SDFK6LSnAFpZh33T1/A8EcGq20FUh32nQzasEz79a1L4zVEak85hke9+tK+Wkf8/<br>1noV5QDC2/lK7D/lLVDk5cfzX5U156tN1HUweWSrVAEPXaT9a97Qzs7akkRKlJ0O<br>mDaBfCVths8xHgzF<br>-----END CERTIFICATE-----</div>"
+        },
+        "title": "[Certificate] Issued by GlobalSign Organization Validation CA - G2; Valid from 2012-07-17 to 2013-07-07; Serial number 11213c7c5e1d967c4c323ae36015672f43c0",
+        "published": "2012-07-17T15:55:02Z",
+        "updated": "2013-03-26T09:01:50Z"
+      }
+    ]
+  }
+}

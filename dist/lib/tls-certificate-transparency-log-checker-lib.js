@@ -13,6 +13,10 @@ var _os2 = _interopRequireDefault(_os);
 
 var _x7 = require("x509.js");
 
+var _xml2json = require("xml2json");
+
+var _https = require("https");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Defaults (used in function definitions)
@@ -31,43 +35,59 @@ function getCertDetails(rawCertSummary) {
 
     var ret = null;
 
-    var rawCertText = rawCertSummary["$t"].match(/.*(-----BEGIN CERTIFICATE-----.*-----END CERTIFICATE-----).*/);
+    if ("$t" in rawCertSummary) {
+        var rawCertText = rawCertSummary["$t"].match(/.*(-----BEGIN CERTIFICATE-----.*-----END CERTIFICATE-----).*/);
 
-    if (rawCertText !== null) {
-        var certText = rawCertText[1].replace(/<br>/g, _os2.default.EOL);
+        if (rawCertText instanceof Array) {
+            var certText = rawCertText[1].replace(/<br>/g, _os2.default.EOL);
 
-        var parsedCertJSON = (0, _x7.parseCert)(certText);
+            var parsedCertJSON = null;
 
-        var certJSON = {
-            serial: parsedCertJSON.serial || null,
-            subject: parsedCertJSON.subject || {}, // eslint-disable-line object-curly-newline
-            issuer: parsedCertJSON.issuer || {}, // eslint-disable-line object-curly-newline
-            validFrom: parsedCertJSON.notBefore || null,
-            validFromTS: 0, // Will be updated below
-            validTo: parsedCertJSON.notAfter || null,
-            validToTS: 0, // Will be updated below
-            daysRemaining: 0, // Will be updated below
-            SAN: parsedCertJSON.altNames || []
-        };
+            try {
+                parsedCertJSON = (0, _x7.parseCert)(certText);
+            } catch (e) {
+                // Don't think there's anything sensible we can do here (?)
+            }
 
-        try {
-            certJSON.validFromTS = parseInt(new Date(certJSON.validFrom).getTime() / 1000, 10); // need to remove last 3 chars as JS use MSec TS's
-        } catch (e) {
-            certJSON.validFromTS = 0; // Is there anything more sensible which could be done?
+            if (parsedCertJSON instanceof Object) {
+                var certJSON = {
+                    serial: parsedCertJSON.serial || null,
+                    subject: parsedCertJSON.subject || {}, // eslint-disable-line object-curly-newline
+                    issuer: parsedCertJSON.issuer || {}, // eslint-disable-line object-curly-newline
+                    validFrom: parsedCertJSON.notBefore || null,
+                    validFromTS: 0, // Will be updated below
+                    validTo: parsedCertJSON.notAfter || null,
+                    validToTS: 0, // Will be updated below
+                    daysRemaining: 0, // Will be updated below
+                    SAN: parsedCertJSON.altNames || []
+                };
+
+                try {
+                    certJSON.validFromTS = parseInt(new Date(certJSON.validFrom).getTime() / 1000, 10); // need to remove last 3 chars as JS use MSec TS's
+                } catch (e) {
+                    certJSON.validFromTS = 0; // Is there anything more sensible which could be done?
+                }
+
+                try {
+                    certJSON.validToTS = parseInt(new Date(certJSON.validTo).getTime() / 1000, 10); // need to remove last 3 chars as JS use MSec TS's
+                } catch (e) {
+                    certJSON.validFromTS = 0; // Is there anything more sensible which could be done?
+                }
+
+                certJSON.daysRemaining = Math.floor((certJSON.validToTS - nowTS) / 86400);
+
+                ret = certJSON;
+            } else {
+                ret = new TypeError("rawCertSummary.$t does not contain a valid x509 certificate");
+            }
+        } else {
+            ret = new TypeError("rawCertSummary.$t does not contain an x509 certificate");
         }
-
-        try {
-            certJSON.validToTS = parseInt(new Date(certJSON.validTo).getTime() / 1000, 10); // need to remove last 3 chars as JS use MSec TS's
-        } catch (e) {
-            certJSON.validFromTS = 0; // Is there anything more sensible which could be done?
-        }
-
-        certJSON.daysRemaining = Math.floor((certJSON.validToTS - nowTS) / 86400);
-
-        ret = certJSON;
+    } else {
+        ret = new TypeError("rawCertSummary must contain a property named '$t'");
     }
 
-    return ret; // null if error, object otherwise
+    return ret; // TypeError if error, object otherwise
 }
 
 function getCertsData(parsedJSON) {
@@ -118,7 +138,7 @@ function getCertsData(parsedJSON) {
     }
     */
 
-    var err = new Error("Malformed JSON, rejecting");
+    var err = new Error("Either your JSON is malformed or there are no valid certificates in the data (versus filter criteria)");
     var certsData = {
         allCerts: {
             count: 0,
@@ -140,7 +160,7 @@ function getCertsData(parsedJSON) {
                 // Use x509.js to parse the raw cert string into consistent JSON
                 var certDetailsJSON = getCertDetails(cert.summary);
 
-                if (certDetailsJSON !== null) {
+                if (certDetailsJSON instanceof Object) {
                     // Ignore certs whose validToTS is < ignoreCertsValidToBeforeTS
                     if (certDetailsJSON.validToTS >= ignoreCertsValidToBeforeTS) {
                         // NOTE: This may be too coarse
@@ -173,6 +193,8 @@ function getCertsData(parsedJSON) {
                             certsData.byCA.entries[certDetailsJSON.issuer.commonName].push(certDetailsJSON);
                         }
                     }
+                } else {
+                    err = new TypeError("JSON is malformed, rejecting");
                 }
             });
         }
@@ -183,14 +205,14 @@ function getCertsData(parsedJSON) {
     certsData.unexpectedCA.count = certsData.unexpectedCA.entries.length;
     certsData.byCA.count = Object.keys(certsData.byCA.entries).length;
 
+    if (err !== null) {
+        certsData = null;
+    }
+
     return callback(err, certsData);
 }
 
-function convertXMLToJSON(toJson, XML, callback) {
-    if (!(typeof toJson === 'function')) {
-        throw new TypeError("Value of argument \"toJson\" violates contract.\n\nExpected:\nFunction\n\nGot:\n" + _inspect(toJson));
-    }
-
+function convertXMLToJSON(XML, callback) {
     if (!(typeof XML === 'string')) {
         throw new TypeError("Value of argument \"XML\" violates contract.\n\nExpected:\nstring\n\nGot:\n" + _inspect(XML));
     }
@@ -202,12 +224,18 @@ function convertXMLToJSON(toJson, XML, callback) {
     var err = null;
     var parsedJSON = null;
 
+    // We try/catch so that the toJson lib fn can throw if it need to without us throwing
     try {
         // NOTE: toJson is a 3rd party dep (xml2json)
-        var rawJSON = toJson(XML);
+        var rawJSON = (0, _xml2json.toJson)(XML);
 
-        // Somewhat oddly, toJson returns a stringified JOSN object
+        // Somewhat oddly, toJson returns a stringified JSON object
         parsedJSON = JSON.parse(rawJSON);
+
+        if (Object.keys(parsedJSON).length === 0) {
+            err = new TypeError("Argument 'XML' resulted in no JSON output, it's probably not XML");
+            parsedJSON = null;
+        }
     } catch (e) {
         err = e;
     }
@@ -215,47 +243,51 @@ function convertXMLToJSON(toJson, XML, callback) {
     return callback(err, parsedJSON);
 }
 
-function getRSSXML(domainNamePattern, get, callback) {
+function getRSSXML(domainNamePattern, callback) // eslint-disable-line consistent-return
+{
     if (!(typeof domainNamePattern === 'string')) {
         throw new TypeError("Value of argument \"domainNamePattern\" violates contract.\n\nExpected:\nstring\n\nGot:\n" + _inspect(domainNamePattern));
-    }
-
-    if (!(get instanceof Object)) {
-        throw new TypeError("Value of argument \"get\" violates contract.\n\nExpected:\nObject\n\nGot:\n" + _inspect(get));
     }
 
     if (!(typeof callback === 'function')) {
         throw new TypeError("Value of argument \"callback\" violates contract.\n\nExpected:\nFunction\n\nGot:\n" + _inspect(callback));
     }
 
-    var xml = "";
+    if (domainNamePattern.length > 0) {
+        (function () {
+            var xml = "";
 
-    // NOTE: We're doing a plain (not if-modified-since) GET on the URL and are NOT using the built-in "ignore expired certs" as we do that programmativally via ignoreCertsValidToBeforeTS
-    get("https://crt.sh/atom?identity=" + domainNamePattern, function (response) {
-        response.on("data", function (d) {
-            xml += d.toString("utf8");
-        });
+            // NOTE: We're doing a plain (not if-modified-since) GET on the URL and are NOT using the built-in "ignore expired certs" as we do that programmativally via ignoreCertsValidToBeforeTS
+            (0, _https.get)("https://crt.sh/atom?identity=" + domainNamePattern, function (response) {
+                response.on("data", function (d) {
+                    xml += d.toString("utf8");
+                });
 
-        response.on("end", function (e) {
-            return callback(e, xml);
-        });
-    });
+                response.on("end", function (e) {
+                    var err = e;
+                    if (e === undefined) {
+                        err = null;
+                    } else // if there's been an error, we want to nullify xml
+                        {
+                            xml = null;
+                        }
+
+                    return callback(err, xml);
+                });
+            });
+        })();
+    } else {
+        var err = new TypeError("Argument 'domainNamePattern' must not be empty");
+        return callback(err, null);
+    }
 }
 
 // Maybe this should be an option obj? for at least e.g. config-type options
-function checkCTLogs(get, toJson, domainNamePatterns) {
-    var ignoreCertsValidFromBeforeTS = arguments.length <= 3 || arguments[3] === undefined ? defaults.ignoreCertsValidFromBeforeTS : arguments[3];
-    var ignoreCertsValidToBeforeTS = arguments.length <= 4 || arguments[4] === undefined ? defaults.ignoreCertsValidToBeforeTS : arguments[4];
-    var expectedCAs = arguments.length <= 5 || arguments[5] === undefined ? defaults.expectedCAs : arguments[5];
-    var callback = arguments[6];
-
-    if (!(get instanceof Object)) {
-        throw new TypeError("Value of argument \"get\" violates contract.\n\nExpected:\nObject\n\nGot:\n" + _inspect(get));
-    }
-
-    if (!(typeof toJson === 'function')) {
-        throw new TypeError("Value of argument \"toJson\" violates contract.\n\nExpected:\nFunction\n\nGot:\n" + _inspect(toJson));
-    }
+function checkCTLogs(domainNamePatterns) {
+    var ignoreCertsValidFromBeforeTS = arguments.length <= 1 || arguments[1] === undefined ? defaults.ignoreCertsValidFromBeforeTS : arguments[1];
+    var ignoreCertsValidToBeforeTS = arguments.length <= 2 || arguments[2] === undefined ? defaults.ignoreCertsValidToBeforeTS : arguments[2];
+    var expectedCAs = arguments.length <= 3 || arguments[3] === undefined ? defaults.expectedCAs : arguments[3];
+    var callback = arguments[4];
 
     if (!Array.isArray(domainNamePatterns)) {
         throw new TypeError("Value of argument \"domainNamePatterns\" violates contract.\n\nExpected:\nArray\n\nGot:\n" + _inspect(domainNamePatterns));
@@ -282,14 +314,14 @@ function checkCTLogs(get, toJson, domainNamePatterns) {
 
     domainNamePatterns.forEach(function (domainNamePattern) {
         // HTTP2-capable GET of the specific XML feed for the relevant domain name pattern (e.g. %.bbc.co.uk - where % is a wildcard)
-        getRSSXML(domainNamePattern, get, function (RSSError, RSSXML) // eslint-disable-line consistent-return
+        getRSSXML(domainNamePattern, function (RSSError, RSSXML) // eslint-disable-line consistent-return
         {
             if (RSSError) {
                 return callback(RSSError, null);
             }
 
             // Raw conversion from XML to JSON
-            convertXMLToJSON(toJson, RSSXML, function (convertErr, RSSJSON) // eslint-disable-line consistent-return
+            convertXMLToJSON(RSSXML, function (convertErr, RSSJSON) // eslint-disable-line consistent-return
             {
                 if (convertErr) {
                     return callback(convertErr, null);
@@ -316,7 +348,13 @@ function checkCTLogs(get, toJson, domainNamePatterns) {
 }
 
 // We *should* only need to export the user-facing function
-module.exports = checkCTLogs;
+module.exports = {
+    getCertDetails: getCertDetails,
+    getCertsData: getCertsData,
+    convertXMLToJSON: convertXMLToJSON,
+    getRSSXML: getRSSXML,
+    checkCTLogs: checkCTLogs
+};
 
 function _inspect(input, depth) {
     var maxDepth = 4;
@@ -336,7 +374,7 @@ function _inspect(input, depth) {
         return typeof input === "undefined" ? "undefined" : _typeof(input);
     } else if (Array.isArray(input)) {
         if (input.length > 0) {
-            var _ret = function () {
+            var _ret2 = function () {
                 if (depth > maxDepth) return {
                         v: '[...]'
                     };
@@ -358,7 +396,7 @@ function _inspect(input, depth) {
                 }
             }();
 
-            if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+            if ((typeof _ret2 === "undefined" ? "undefined" : _typeof(_ret2)) === "object") return _ret2.v;
         } else {
             return 'Array';
         }
@@ -390,4 +428,3 @@ function _inspect(input, depth) {
         }
     }
 }
-//# sourceMappingURL=/Users/craign04/Documents/BBC/GlobalTrafficMGMT/github/tls-certificate-transparency-log-checker/dist/maps/lib/tls-certificate-transparency-log-checker-lib.js.map

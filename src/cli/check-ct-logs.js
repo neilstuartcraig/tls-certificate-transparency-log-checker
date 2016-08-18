@@ -4,11 +4,10 @@
 // Core deps
 
 // 3rd party deps
-import {get} from "http2";
-import {toJson} from "xml2json";
+
 
 // Local deps
-import checkCTLogs from "../lib/tls-certificate-transparency-log-checker-lib.js";
+import {checkCTLogs} from "../lib/tls-certificate-transparency-log-checker-lib.js";
 
 const yargs = require("yargs")
     .usage("Usage: $0 [options]")
