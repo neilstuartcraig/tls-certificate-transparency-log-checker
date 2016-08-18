@@ -121,7 +121,7 @@ if(args.expected_cas)
     });
 }
 
-checkCTLogs(get, toJson, domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
+checkCTLogs(domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
 {
     if(checkCTLogsErr)
     {

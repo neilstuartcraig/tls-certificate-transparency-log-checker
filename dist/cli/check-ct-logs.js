@@ -93,7 +93,7 @@ if (args.expected_cas) {
     });
 }
 
-(0, _tlsCertificateTransparencyLogCheckerLib.checkCTLogs)(get, toJson, domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, expectedCAs, function (checkCTLogsErr, checkCTLogsRes) {
+(0, _tlsCertificateTransparencyLogCheckerLib.checkCTLogs)(domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, expectedCAs, function (checkCTLogsErr, checkCTLogsRes) {
     if (checkCTLogsErr) {
         throw checkCTLogsErr;
     }

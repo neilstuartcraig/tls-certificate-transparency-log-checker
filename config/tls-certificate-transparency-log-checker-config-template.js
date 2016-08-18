@@ -12,8 +12,8 @@ module.exports =
     // Data type is array of strings
     domainNamePatterns:
     [
-        "%.bbc.co.uk",
-        "%.bbc.com"
+        "%.example.co.uk",
+        "%.example.com"
     ],
 
     // Timestamp representing the date/time after which certificates whose valid from date is older (less than) will be ignored
@@ -26,7 +26,7 @@ module.exports =
     // Be as general or as specific as you want here...i.e. expect a CA wholesale or just e.g. EV
     expectedCAs:
     [
-        /.*Globalsign.*/i,
+        /.*GlobalSign.*/,
         /.*DigiCert.*/
     ]
 };
