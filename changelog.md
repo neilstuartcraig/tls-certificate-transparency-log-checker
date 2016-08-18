@@ -1,5 +1,8 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.1.0
+* Add --version CLI arg
+
 ## v2.0.1
 * Correct typo in CLI argument alias "--pattern" and improve example
 

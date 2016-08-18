@@ -8,6 +8,7 @@
 
 // Local deps
 import {checkCTLogs} from "../lib/tls-certificate-transparency-log-checker-lib.js";
+import {version as appVersion} from "../../package.json";
 
 const yargs = require("yargs")
     .usage("Usage: $0 [options]")
@@ -92,10 +93,23 @@ const yargs = require("yargs")
     {
         demand: false,
         alias: "h"
+    }).option("version",
+    {
+        demand: false,
+        alias: ["v", "ver"],
+        type: "boolean",
+        describe: "Show the version number and exit"
     }
 );
 
 let args = yargs.argv;
+
+// Show version number from package.json and exit with return code 0
+if(args.version)
+{
+    console.log(appVersion);
+    process.exit();
+}
 
 let config = null;
 try

@@ -11,6 +11,8 @@
 
 var _tlsCertificateTransparencyLogCheckerLib = require("../lib/tls-certificate-transparency-log-checker-lib.js");
 
+var _package = require("../../package.json");
+
 var yargs = require("yargs").usage("Usage: $0 [options]").help("help").option("config", {
     // NOTE: Not sure why but you have to use --config <path>
     demand: false,
@@ -70,9 +72,20 @@ var yargs = require("yargs").usage("Usage: $0 [options]").help("help").option("c
 }).option("help", {
     demand: false,
     alias: "h"
+}).option("version", {
+    demand: false,
+    alias: ["v", "ver"],
+    type: "boolean",
+    describe: "Show the version number and exit"
 });
 
 var args = yargs.argv;
+
+// Show version number from package.json and exit with return code 0
+if (args.version) {
+    console.log(_package.version);
+    process.exit();
+}
 
 var config = null;
 try {
