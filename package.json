@@ -1,6 +1,6 @@
 {
   "name": "tls-certificate-transparency-log-checker",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "A super simple program to check TLS certificate transparency logs for one or more domain name patterns, ",
   "main": "dist/lib/tls-certificate-transparency-log-checker-lib.js",
   "scripts": {
@@ -42,8 +42,6 @@
   },
   "homepage": "https://github.com/neilstuartcraig/tls-certificate-transparency-log-alerter#readme",
   "dependencies": {
-    "http2": "^3.3.4",
-    "snyk": "^1.18.0",
     "x509.js": "^1.0.0",
     "xml2json": "^0.9.1",
     "yargs": "^4.8.1"
@@ -55,10 +53,10 @@
     "babel-plugin-syntax-flow": "^6.8.0",
     "babel-plugin-transform-flow-strip-types": "^6.8.0",
     "babel-plugin-typecheck": "^3.9.0",
-    "babel-preset-es2015-node6": "^0.2.0",
     "eslint-config-tdp": "^1.1.1",
     "nock": "^8.0.0",
-    "nyc": "^7.1.0"
+    "nyc": "^7.1.0",
+    "snyk": "^1.18.0"
   },
   "snyk": true
 }

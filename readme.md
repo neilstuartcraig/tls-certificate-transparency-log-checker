@@ -1,7 +1,6 @@
 # tls-certificate-transparency-log-checker
 
-[![Travis CI build status](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-checker.svg)](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-checker)  
-[![Known Vulnerabilities](https://snyk.io/test/npm/tls-certificate-transparency-log-checker/badge.svg)](https://snyk.io/test/npm/tls-certificate-transparency-log-checker)
+[![Travis CI build status](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-checker.svg)](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-checker)  [![Known Vulnerabilities](https://snyk.io/test/npm/tls-certificate-transparency-log-checker/badge.svg)](https://snyk.io/test/npm/tls-certificate-transparency-log-checker)
 
 
 ## HEALTH WARNING!
@@ -13,9 +12,6 @@ A super simple program to check TLS certificate transparency logs for one or mor
 This app offers both simple, unix-style command line functionality and a consumable API/library. The end goal is to create a small service which can be used (as an example) as an AWS Lambda function which is triggered by a Cloudwatch event and can raise Cloudwatch alarms which can notify e.g. an ops team.
 
 The source of data for this package is [crt.sh](https://crt.sh), a certificate transparency log aggregator. We make use of the RSS feeds crt.sh provides so please don't abuse them (e.g. by running tests very frequently).
-
-Oh yeah, this is HTTP2-capable in terms of the requests it makes for crt.sh data.
-
 
 ## Prerequisites
 
