@@ -1,6 +1,7 @@
 # tls-certificate-transparency-log-checker
 
 [![Travis CI build status](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-checker.svg)](https://travis-ci.org/neilstuartcraig/tls-certificate-transparency-log-checker)  
+[![Known Vulnerabilities](https://snyk.io/test/npm/tls-certificate-transparency-log-checker/badge.svg)](https://snyk.io/test/npm/tls-certificate-transparency-log-checker)
 
 
 ## HEALTH WARNING!
