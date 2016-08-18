@@ -1,5 +1,8 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.3.0
+* Change default for ignoreCertsValidFromBeforeTS to 0 (include all certs) and make ignoreCertsValidToBeforeTS === 0 a magic value which resolves to "now"
+
 ## v2.2.0
 * Set CLI output to full width of terminal
 

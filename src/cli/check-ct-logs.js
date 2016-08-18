@@ -127,6 +127,12 @@ let domainNamePatterns = args.domain_name_patterns || config.domainNamePatterns;
 let ignoreCertsValidFromBeforeTS = args.valid_from || config.ignoreCertsValidFromBeforeTS;
 let ignoreCertsValidToBeforeTS = args.valid_to || config.ignoreCertsValidToBeforeTS;
 
+// if ignoreCertsValidToBeforeTS === 0, set to "now"
+if(ignoreCertsValidToBeforeTS === 0)
+{
+    ignoreCertsValidToBeforeTS = parseInt(new Date().getTime() / 1000, 10);
+}
+
 let expectedCAs = config.expectedCAs;
 
 if(args.expected_cas)

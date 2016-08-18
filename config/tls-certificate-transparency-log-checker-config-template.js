@@ -17,10 +17,10 @@ module.exports =
     ],
 
     // Timestamp representing the date/time after which certificates whose valid from date is older (less than) will be ignored
-    ignoreCertsValidFromBeforeTS: nowTS - (86400), // Ignore certs issued more than 1 day ago
+    ignoreCertsValidFromBeforeTS: 0, // Include all certs (because 0 == 01/01/1970 which is before SSL, let alone CT logs)
 
     // Timestamp representing the date/time after which certificates whose valid until date is older (less than) will be ignored
-    ignoreCertsValidToBeforeTS: nowTS, // Ignore certs which are already expired
+    ignoreCertsValidToBeforeTS: nowTS, // Ignore certs which have expired
 
     // Array of regexes to match CAs in certs against. Any CAs which DO NOT match one or more regex will trigger an alert
     // Be as general or as specific as you want here...i.e. expect a CA wholesale or just e.g. EV
