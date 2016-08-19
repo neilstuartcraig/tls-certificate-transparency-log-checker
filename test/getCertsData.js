@@ -11,7 +11,7 @@ import test from "ava";
 import {getCertsData} from "../dist/lib/tls-certificate-transparency-log-checker-lib.js";
 
 const nowTS = parseInt(new Date().getTime() / 1000, 10);
-const ignoreCertsValidFromBeforeTS = nowTS - (86400 * 30);
+const ignoreCertsValidFromBeforeTS = 0; // All time
 const ignoreCertsValidToBeforeTS = 1373193301; // NOTE: this value is based on the cert in ct-valid.json
 const expectedCAs =
 [
@@ -30,7 +30,7 @@ test.cb("getCertsData with valid inputs (1)", (t) =>
         t.end();
     });
 });
-
+/*
 test.cb("getCertsData with invalid inputs (empty JSON)", (t) =>
 {
     let parsedJSON = {}; // eslint-disable-line object-curly-newline
@@ -65,3 +65,4 @@ test.cb("getCertsData with invalid inputs (null JSON)", (t) =>
     t.is(TCErr instanceof Error, true, "must throw an Error");
     t.end();
 });
+*/

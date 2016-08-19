@@ -1,5 +1,8 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.3.5
+* Revert the below and amend tests accordingly (and also as per 2.3.0)
+
 ## v2.3.4
 * Fix bug in date handling, "valid to before" was the wrong way around
 
@@ -19,8 +22,7 @@
 * Set CLI output to full width of terminal
 
 ## v2.1.0
-* Add --version CLI arg
-
+* Add --version CLI argg
 ## v2.0.1
 * Correct typo in CLI argument alias "--pattern" and improve example
 

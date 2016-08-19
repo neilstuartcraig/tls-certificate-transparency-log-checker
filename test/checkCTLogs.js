@@ -33,7 +33,7 @@ test.cb("checkCTLogs with valid inputs (1)", (t) =>
     });
 
     // Override the config values for readability - ???
-    let ignoreCertsValidFromBeforeTS = nowTS - (86400 * 365); // Ignore certs from > 365 days ago
+    let ignoreCertsValidFromBeforeTS = 0;//nowTS - (86400 * 365); // Ignore certs from > 365 days ago
     let ignoreCertsValidToBeforeTS = nowTS;
 
     checkCTLogs(config.domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
@@ -43,15 +43,15 @@ test.cb("checkCTLogs with valid inputs (1)", (t) =>
         t.is(Object.keys(checkCTLogsRes).length === 3, true, "checkCTLogsRes must have 3 keys");
 
         t.is(Object.keys(checkCTLogsRes.allCerts).length === 2, true, "checkCTLogsRes.allCerts must have 2 keys");
-        t.is(checkCTLogsRes.allCerts.count, 51, "checkCTLogsRes.allCerts.count must be 4 (due to data source)");
+        t.is(checkCTLogsRes.allCerts.count, 89, "checkCTLogsRes.allCerts.count must be 4 (due to data source)");
         t.is(Object.keys(checkCTLogsRes.allCerts.entries).length, checkCTLogsRes.allCerts.count, "checkCTLogsRes.allCerts.entries must have 4 keys (due to data source)");
 
         t.is(Object.keys(checkCTLogsRes.unexpectedCA).length === 2, true, "checkCTLogsRes.unexpectedCA must have 2 keys");
-        t.is(checkCTLogsRes.unexpectedCA.count, 5, "checkCTLogsRes.unexpectedCA.count must be 4 (due to data source)");
+        t.is(checkCTLogsRes.unexpectedCA.count, 7, "checkCTLogsRes.unexpectedCA.count must be 4 (due to data source)");
         t.is(Object.keys(checkCTLogsRes.unexpectedCA.entries).length, checkCTLogsRes.unexpectedCA.count, "checkCTLogsRes.unexpectedCA.entries must have 4 keys (due to data source)");
 
         t.is(Object.keys(checkCTLogsRes.byCA).length === 2, true, "checkCTLogsRes.byCA must have 2 keys");
-        t.is(checkCTLogsRes.byCA.count, 4, "checkCTLogsRes.byCA.count must be 4 (due to data source)");
+        t.is(checkCTLogsRes.byCA.count, 6, "checkCTLogsRes.byCA.count must be 4 (due to data source)");
         t.is(Object.keys(checkCTLogsRes.byCA.entries).length, checkCTLogsRes.byCA.count, "checkCTLogsRes.byCA.entries must have 4 keys (due to data source)");
 
         t.end();

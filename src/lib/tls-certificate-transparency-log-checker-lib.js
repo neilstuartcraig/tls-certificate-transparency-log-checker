@@ -155,9 +155,11 @@ function getCertsData(parsedJSON: Object, ignoreCertsValidFromBeforeTS: number =
 
                 if(certDetailsJSON instanceof Object)
                 {
+// console.log("Cert valid from %d -- ignore from: %d -- diff %d", certDetailsJSON.validToTS, ignoreCertsValidToBeforeTS, (certDetailsJSON.validToTS - ignoreCertsValidToBeforeTS) );
                     // Ignore certs whose validToTS is < ignoreCertsValidToBeforeTS
-                    if(certDetailsJSON.validToTS <= ignoreCertsValidToBeforeTS)
+                    if(certDetailsJSON.validToTS >= ignoreCertsValidToBeforeTS)
                     {
+// console.log("cert OK");
                         // NOTE: This may be too coarse
                         err = null;
 
