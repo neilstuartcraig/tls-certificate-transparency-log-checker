@@ -1,5 +1,9 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.3.8
+* Add examples.md
+* Correct comment
+
 ## v2.3.7
 * Make npm script 'snyk-protect' use the project-local snyk
 * Add unit tests to npm prepublish script

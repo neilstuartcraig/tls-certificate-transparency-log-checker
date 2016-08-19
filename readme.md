@@ -49,22 +49,7 @@ check-ct-logs -h
 
 #### Examples
 
-##### Find CT logs for www.bbc.co.uk
-```
-check-ct-logs -d "www.bbc.co.uk"
-```
-
-##### Find CT logs for \*.bbc.co.uk, redirecting output JSON to a file
-```
-check-ct-logs -d "%.bbc.co.uk" > out.json
-```
-
-##### Find CT logs for www.bbc.co.uk & expecting GlobalSign or DigiCert certs, returning an exit code of 1 if unexpected CA's are found
-```
-check-ct-logs -d "www.bbc.co.uk" --cas "GlobalSign.*, DigiCert.*" -e --no_all_certs --no_by_ca
-```
-
-
+See [examples page](./examples.md).  
 
 #### Configuration helper
 There's also a helper "binary" which will create a template config file for you in your current working directory:

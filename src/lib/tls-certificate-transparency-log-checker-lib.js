@@ -292,7 +292,7 @@ function checkCTLogs(domainNamePatterns: Array, ignoreCertsValidFromBeforeTS: nu
 
     domainNamePatterns.forEach((domainNamePattern) =>
     {
-        // HTTP2-capable GET of the specific XML feed for the relevant domain name pattern (e.g. %.bbc.co.uk - where % is a wildcard)
+        // HTTP GET of the specific XML feed for the relevant domain name pattern (e.g. %.bbc.co.uk - where % is a wildcard)
         getRSSXML(domainNamePattern, (RSSError, RSSXML) => // eslint-disable-line consistent-return
         {
             if(RSSError)
