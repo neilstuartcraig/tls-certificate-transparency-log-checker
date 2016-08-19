@@ -10,7 +10,6 @@ import test from "ava";
 // Local deps
 import {getCertsData} from "../dist/lib/tls-certificate-transparency-log-checker-lib.js";
 
-const nowTS = parseInt(new Date().getTime() / 1000, 10);
 const ignoreCertsValidFromBeforeTS = 0; // All time
 const ignoreCertsValidToBeforeTS = 1373193301; // NOTE: this value is based on the cert in ct-valid.json
 const expectedCAs =

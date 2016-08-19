@@ -1,6 +1,6 @@
 {
   "name": "tls-certificate-transparency-log-checker",
-  "version": "2.3.5",
+  "version": "2.3.6",
   "description": "A super simple program to check TLS certificate transparency logs for one or more domain name patterns, ",
   "main": "dist/lib/tls-certificate-transparency-log-checker-lib.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "vuln-scan": "./node_modules/.bin/snyk test",
     "lint": "node_modules/.bin/eslint ./src/**/*.js test/*.js",
     "unit-test": "node_modules/.bin/nyc node_modules/.bin/ava test/*.js",
-    "test": "snyk test && node_modules/.bin/nyc node_modules/.bin/ava test/*.js",
+    "test": "npm run vuln-scan && npm run unit-test",
     "report": "./node_modules/.bin/nyc report --reporter=lcov --reporter=html && open coverage/index.html",
     "build": "./node_modules/babel-cli/bin/babel.js src/ --out-dir dist --source-maps inline",
     "snyk-protect": "snyk protect",

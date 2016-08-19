@@ -146,6 +146,8 @@ function getCertsData(parsedJSON: Object, ignoreCertsValidFromBeforeTS: number =
 
     if(parsedJSON.feed)
     {
+        err = null; // NOTE: We'll null-ify (then potentially set to an error) 'err' here to avoid throwing errors if there are simply no certs found
+
         if(parsedJSON.feed.entry instanceof Array)
         {
             parsedJSON.feed.entry.forEach((cert) =>
@@ -155,14 +157,9 @@ function getCertsData(parsedJSON: Object, ignoreCertsValidFromBeforeTS: number =
 
                 if(certDetailsJSON instanceof Object)
                 {
-// console.log("Cert valid from %d -- ignore from: %d -- diff %d", certDetailsJSON.validToTS, ignoreCertsValidToBeforeTS, (certDetailsJSON.validToTS - ignoreCertsValidToBeforeTS) );
                     // Ignore certs whose validToTS is < ignoreCertsValidToBeforeTS
                     if(certDetailsJSON.validToTS >= ignoreCertsValidToBeforeTS)
                     {
-// console.log("cert OK");
-                        // NOTE: This may be too coarse
-                        err = null;
-
                         // Only include certs which have been issued since the last run, unless the user has opted to return all by setting ignoreCertsValidFromBeforeTS to (exactly) 0
                         if(certDetailsJSON.validFromTS >= ignoreCertsValidFromBeforeTS || ignoreCertsValidFromBeforeTS === 0)
                         {

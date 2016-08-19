@@ -79,9 +79,8 @@ test.cb("checkCTLogs with invalid inputs (bogus summary data in XML)", (t) =>
 
     checkCTLogs(domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
     {
-        t.is(checkCTLogsErr instanceof Error, true, "checkCTLogsErr must be an error");
-
-        t.is(checkCTLogsRes === null, true, "checkCTLogsRes must be null");
+        t.is(checkCTLogsErr === null, true, "checkCTLogsErr must be null"); // NOTE we don't want an error here otherwise we end up throwing errors when we find no certs
+        t.is(Object.keys(checkCTLogsRes).length === 3, true, "checkCTLogsRes must have 3 keys"); // Basic check without repeating the above
 
         t.end();
     });

@@ -1,5 +1,9 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.3.6
+* Fix error with throwing error if no certs found
+* More logical(/less repetition of config) NPM test directive
+
 ## v2.3.5
 * Revert the below and amend tests accordingly (and also as per 2.3.0)
 
