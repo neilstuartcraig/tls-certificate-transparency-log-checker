@@ -1,5 +1,8 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.3.9
+* Add info on TS defaults to CLI
+
 ## v2.3.8
 * Add examples.md
 * Correct comment

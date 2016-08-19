@@ -72,14 +72,14 @@ const yargs = require("yargs")
         demand: false,
         type: "number",
         alias: ["vf", "from"],
-        describe: "A Unix timestamp (integer number of seconds since the Unix epoch). Certificates whose 'valid from' date is older than this will be omitted from the output"
+        describe: "A Unix timestamp (integer number of seconds since the Unix epoch). Certificates whose 'valid from' date is older than this will be omitted from the output. Defaults to your config file value which ships as 0."
     })
     .option("valid_to",
     {
         demand: false,
         type: "number",
         alias: ["vt", "to", "valid_to"],
-        describe: "A Unix timestamp (integer number of seconds since the Unix epoch). Certificates whose 'valid until' date is newer than this will be omitted from the output"
+        describe: "A Unix timestamp (integer number of seconds since the Unix epoch). Certificates whose 'valid until' date is newer than this will be omitted from the output. Defaults to your config file value which ships as 'now'."
     })
     .option("error_if_entries",
     {
