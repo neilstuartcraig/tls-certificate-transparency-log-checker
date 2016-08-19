@@ -1,5 +1,9 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.3.7
+* Make npm script 'snyk-protect' use the project-local snyk
+* Add unit tests to npm prepublish script
+
 ## v2.3.6
 * Fix error with throwing error if no certs found
 * More logical(/less repetition of config) NPM test directive
