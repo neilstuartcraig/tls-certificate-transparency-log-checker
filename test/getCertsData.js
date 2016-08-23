@@ -29,7 +29,7 @@ test.cb("getCertsData with valid inputs (1)", (t) =>
         t.end();
     });
 });
-/*
+
 test.cb("getCertsData with invalid inputs (empty JSON)", (t) =>
 {
     let parsedJSON = {}; // eslint-disable-line object-curly-newline
@@ -64,4 +64,3 @@ test.cb("getCertsData with invalid inputs (null JSON)", (t) =>
     t.is(TCErr instanceof Error, true, "must throw an Error");
     t.end();
 });
-*/

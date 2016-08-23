@@ -1,5 +1,9 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.3.11
+* Re-enable commented out tests
+* Add vscode config files (WIP)
+
 ## v2.3.10
 * Fix timestamp to specific value in checkCTLogs test to prevent divergence over timestamp
 * Minor tidies
