@@ -1,5 +1,10 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.3.10
+* Fix timestamp to specific value in checkCTLogs test to prevent divergence over timestamp
+* Minor tidies
+* Add sourcemaps to a few files for which they were missing
+
 ## v2.3.9
 * Add info on TS defaults to CLI
 

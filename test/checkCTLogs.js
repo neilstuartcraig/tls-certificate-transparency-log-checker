@@ -34,7 +34,7 @@ test.cb("checkCTLogs with valid inputs (1)", (t) =>
 
     // Override the config values for readability - ???
     let ignoreCertsValidFromBeforeTS = 0;//nowTS - (86400 * 365); // Ignore certs from > 365 days ago
-    let ignoreCertsValidToBeforeTS = nowTS;
+    let ignoreCertsValidToBeforeTS = 1471943287; // NOTE: we need to hard code this otherwise it changes over time
 
     checkCTLogs(config.domainNamePatterns, ignoreCertsValidFromBeforeTS, ignoreCertsValidToBeforeTS, config.expectedCAs, (checkCTLogsErr, checkCTLogsRes) =>
     {
@@ -43,7 +43,7 @@ test.cb("checkCTLogs with valid inputs (1)", (t) =>
         t.is(Object.keys(checkCTLogsRes).length === 3, true, "checkCTLogsRes must have 3 keys");
 
         t.is(Object.keys(checkCTLogsRes.allCerts).length === 2, true, "checkCTLogsRes.allCerts must have 2 keys");
-        t.is(checkCTLogsRes.allCerts.count, 89, "checkCTLogsRes.allCerts.count must be 4 (due to data source)");
+        t.is(checkCTLogsRes.allCerts.count, 86, "checkCTLogsRes.allCerts.count must be 4 (due to data source)");
         t.is(Object.keys(checkCTLogsRes.allCerts.entries).length, checkCTLogsRes.allCerts.count, "checkCTLogsRes.allCerts.entries must have 4 keys (due to data source)");
 
         t.is(Object.keys(checkCTLogsRes.unexpectedCA).length === 2, true, "checkCTLogsRes.unexpectedCA must have 2 keys");
