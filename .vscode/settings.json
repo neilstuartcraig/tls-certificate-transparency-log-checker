@@ -1,3 +1,14 @@
 // Place your settings in this file to overwrite default and user settings.
 {
+    "emeraldwalk.runonsave":
+    {
+        "autoClearConsole": true,
+        "commands": 
+        [
+            {
+                "match": ".*",
+                "cmd": "npm run build"
+            }
+        ]
+    }
 }

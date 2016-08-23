@@ -1,5 +1,9 @@
 # tls-certificate-transparency-log-checker changelog
 
+## v2.3.12
+* Add mroe vscode config
+* Update build
+
 ## v2.3.11
 * Re-enable commented out tests
 * Add vscode config files (WIP)
